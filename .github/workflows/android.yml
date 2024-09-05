@@ -20,6 +20,9 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
 
+      - name: Make Gradle Wrapper Executable
+        run: chmod +x ./gradlew
+
       - name: Build APK
         run: ./gradlew assembleRelease
         env:
