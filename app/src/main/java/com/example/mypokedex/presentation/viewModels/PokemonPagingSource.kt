@@ -5,16 +5,18 @@ import androidx.paging.PagingState
 import com.example.mypokedex.data.api.ApiService
 import com.example.mypokedex.data.model.response.ResultPokemon
 import android.util.Log
+import com.example.mypokedex.domain.repo.PokemonRepository
 
 class PokemonPagingSource(
-    private val apiService: ApiService
+    private val pokemonRepository: PokemonRepository,
 ) : PagingSource<Int, ResultPokemon>() {
+    private val loadLimit = 40
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ResultPokemon> {
         return try {
             val offset = params.key ?: 0
             val limit = params.loadSize
-            val response = apiService.getPokemonList(limit = limit, offset = offset)
+            val response = pokemonRepository.getPokemonList(limit = loadLimit, offset = offset)
 
             val prevKey = if (offset == 0) null else offset - limit
             val nextKey = if (response.next == null) null else offset + limit
