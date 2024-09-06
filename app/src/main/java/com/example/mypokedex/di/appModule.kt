@@ -17,7 +17,7 @@ val appModule = module {
     single { providePokemonApi(get()) }
     single { providePokemonRepository(get()) }
     single { PokemonPagingSource(get()) }
-    viewModel { HomeViewModel(get() )}
+    viewModel { HomeViewModel(get(),get())}
 
 }
 
