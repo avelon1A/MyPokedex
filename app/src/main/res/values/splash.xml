@@ -2,7 +2,7 @@
 <resources>
     <style name="Theme.MyPokedex.Staring" parent="Theme.SplashScreen" >
         <item name="windowSplashScreenBackground">#000029</item>"
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_new_logo</item>
         <item name="postSplashScreenTheme">@style/Theme.MyPokedex</item>
     </style>
 </resources>

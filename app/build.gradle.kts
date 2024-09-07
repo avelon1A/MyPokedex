@@ -135,5 +135,6 @@ dependencies {
     implementation ("androidx.palette:palette:1.0.0")
     implementation (libs.androidx.paging.runtime.ktx)
     implementation (libs.androidx.paging.compose)
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.3.2")
 
 }

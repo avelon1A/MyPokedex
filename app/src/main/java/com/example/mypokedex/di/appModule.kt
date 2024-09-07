@@ -3,6 +3,8 @@ package com.example.mypokedex.di
 import com.example.mypokedex.data.api.ApiService
 import com.example.mypokedex.data.repo.PokemonRepositoryImp
 import com.example.mypokedex.domain.repo.PokemonRepository
+import com.example.mypokedex.domain.usecases.GetAppEntry
+import com.example.mypokedex.domain.usecases.SaveAppEntry
 import com.example.mypokedex.presentation.viewModels.HomeViewModel
 import com.example.mypokedex.presentation.viewModels.PokemonPagingSource
 import com.example.mypokedex.util.Const.BASE_URL
@@ -17,6 +19,8 @@ val appModule = module {
     single { providePokemonApi(get()) }
     single { providePokemonRepository(get()) }
     single { PokemonPagingSource(get()) }
+    single { SaveAppEntry(get()) }
+    single { GetAppEntry(get()) }
     viewModel { HomeViewModel(get(),get())}
 
 }
