@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mypokedex.presentation.common.PokemonCard
 import com.example.mypokedex.presentation.navigation.AppNavHost
 import com.example.mypokedex.presentation.screen.HomeScreen
+import com.example.mypokedex.presentation.screen.OnBoardingScreen
 import com.example.mypokedex.presentation.ui.theme.MyPokedexTheme
 
 class MainActivity : ComponentActivity() {
@@ -33,7 +34,8 @@ class MainActivity : ComponentActivity() {
                 AppNavHost(
                     navController = navController,
                     modifier = Modifier.padding(),
-                    startDestination = HomeScreen)
+                    startDestination = OnBoardingScreen
+                )
 
             }
         }
