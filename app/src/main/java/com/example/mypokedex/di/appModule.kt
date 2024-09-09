@@ -1,9 +1,12 @@
 package com.example.mypokedex.di
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.room.Room
 import com.bosch.composewithkotlin20.data.manager.LocalUserMangerImp
 import com.bosch.composewithkotlin20.domain.usecases.LoginStatus
 import com.example.mypokedex.data.api.ApiService
+import com.example.mypokedex.data.localDataBase.AppDatabase
+import com.example.mypokedex.data.localDataBase.PokemonDao
 import com.example.mypokedex.data.repo.PokemonRepositoryImp
 import com.example.mypokedex.domain.manger.LocalUserManager
 import com.example.mypokedex.domain.repo.PokemonRepository
@@ -15,6 +18,7 @@ import com.example.mypokedex.presentation.viewModels.OnBoardingViewModel
 import com.example.mypokedex.presentation.viewModels.PokemonPagingSource
 import com.example.mypokedex.util.Const.BASE_URL
 import org.koin.android.ext.koin.androidApplication
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -24,14 +28,26 @@ val appModule = module {
 
     single { provideRetrofit() }
     single { providePokemonApi(get()) }
-    single { providePokemonRepository(get()) }
+    single { providePokemonRepository(get(),get()) }
     single { PokemonPagingSource(get()) }
     single { SaveAppEntry(get()) }
     single { GetAppEntry(get()) }
     single { LoginStatus(get()) }
     single { AppEntryUseCase(get(), get()) }
     single<LocalUserManager> { LocalUserMangerImp(androidApplication()) }
-    viewModel { HomeViewModel(get(),get())}
+
+    single {
+        Room.databaseBuilder(
+            androidContext(),
+            AppDatabase::class.java,
+            "pokemon_database"
+        ).build()
+    }
+
+    single {
+        get<AppDatabase>().pokemonDao()
+    }
+    viewModel { HomeViewModel(get())}
     viewModel { OnBoardingViewModel(get()) }
 
 }
@@ -46,7 +62,7 @@ fun provideRetrofit(): Retrofit {
 fun providePokemonApi(retrofit: Retrofit): ApiService {
     return retrofit.create(ApiService::class.java)
 }
-fun providePokemonRepository(apiService: ApiService): PokemonRepository {
-  return PokemonRepositoryImp(apiService)
+fun providePokemonRepository(apiService: ApiService,pokemonDao: PokemonDao): PokemonRepository {
+  return PokemonRepositoryImp(apiService,pokemonDao)
 
 }

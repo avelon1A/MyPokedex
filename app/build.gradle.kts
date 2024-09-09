@@ -136,5 +136,6 @@ dependencies {
     implementation (libs.androidx.paging.runtime.ktx)
     implementation (libs.androidx.paging.compose)
     implementation("androidx.compose.ui:ui-text-google-fonts:1.3.2")
+    implementation ("androidx.room:room-paging:2.5.0")
 
 }

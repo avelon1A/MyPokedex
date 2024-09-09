@@ -1,11 +1,14 @@
 package com.example.mypokedex.presentation.screen
 
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
@@ -13,15 +16,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.example.mypokedex.presentation.common.PokemonCard
 import com.example.mypokedex.presentation.common.PokemonCardNew
 import com.example.mypokedex.presentation.viewModels.HomeViewModel
 import kotlinx.serialization.Serializable
@@ -32,6 +36,13 @@ fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
 
     val pokemonList = viewModel.pokemonList.collectAsLazyPagingItems()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    Log.d("HomeScreen", "Pokemon List: $pokemonList")
+    LaunchedEffect(pokemonList.itemCount) {
+        Log.d("HomeScreen", "Pokemon List Size: ${pokemonList.itemCount}")
+        pokemonList.itemSnapshotList.forEach { item ->
+            Log.d("HomeScreen", "Pokemon Item: $item")
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -58,11 +69,24 @@ fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
             )
         },
         content = { innerPadding ->
+            if(pokemonList.itemCount == 0){
+                Column(modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp)
+                        .padding(bottom = 100.dp).background(Color.Green))
+
+                }
+
+        }
+            else{
             LazyColumn(
                 contentPadding = innerPadding,
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize().padding(18.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(18.dp)
             ) {
                 items(pokemonList.itemCount) { pokemonIndex ->
                     pokemonList[pokemonIndex]?.let { pokemon ->
@@ -72,10 +96,10 @@ fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
                             pokemonName = pokemon.name,
                             image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonNumber}.png",
                             onClick = {
-                               navController.navigate(PokemonDetailScreen(
-                                   pokemonName = pokemon.name,
-                                   image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonNumber}.png"
-                               ))
+                                navController.navigate(PokemonDetailScreen(
+                                    pokemonName = pokemon.name,
+                                    image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonNumber}.png"
+                                ))
 
                             }
                             , type = pokemon.types
@@ -83,6 +107,8 @@ fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
                     }
                 }
             }
+        }
+
         }
     )
 }
