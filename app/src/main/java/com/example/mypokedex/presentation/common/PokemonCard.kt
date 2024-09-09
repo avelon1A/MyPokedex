@@ -44,7 +44,9 @@ fun PokemonCard(pokemonName: String, image: String, onClick: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
             SubcomposeAsyncImage(
-                modifier = Modifier.fillMaxSize().padding(30.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(30.dp),
                 model =  image,
                 contentScale = ContentScale.Crop,
                 contentDescription = "pokemon_$pokemonName"
