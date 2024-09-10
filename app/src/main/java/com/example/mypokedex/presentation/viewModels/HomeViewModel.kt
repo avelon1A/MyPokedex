@@ -34,7 +34,7 @@ class HomeViewModel(
     private fun fetchPokemonList() {
         viewModelScope.launch {
             Pager(
-                config = PagingConfig(pageSize = 10, enablePlaceholders = false)
+                config = PagingConfig(pageSize = 20, enablePlaceholders = false)
             ) {
                 pokemonRepository.getPokemonPagingSource()
             }.flow.cachedIn(viewModelScope)
