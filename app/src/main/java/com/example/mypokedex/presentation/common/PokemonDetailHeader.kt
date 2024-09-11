@@ -97,9 +97,9 @@ fun Header(modifier: Modifier = Modifier) {
                     .requiredWidth(width = 142.dp)
                     .requiredHeight(height = 155.dp))
         }
-        Column(modifier = Modifier.fillMaxSize().offset(y=300.dp).background(
-            Color.Black
-        )) {
+        Column(modifier = Modifier.fillMaxSize().offset(y=300.dp)
+        ) {
+            Text(text = name,)
 
         }
     }
