@@ -72,3 +72,15 @@ fun getPokemonSmallBackground(name:String): Int {
         else ->  R.drawable.pokeball
     }
 }
+
+fun getIconDescibe(name:String): Int {
+    return when (name) {
+        "WEIGHT" -> R.drawable.icon_weight
+        "HEIGHT" -> R.drawable.icon_height
+        "CATEGORY" -> R.drawable.icon_category
+        "ABILITY" -> R.drawable.icon_ball
+        "MALE" -> R.drawable.icon_male
+        "FEMALE" -> R.drawable.icon_female
+        else -> { R.drawable.pokeball}
+    }
+}

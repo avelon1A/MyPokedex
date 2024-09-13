@@ -9,14 +9,18 @@ import com.example.mypokedex.data.api.ApiService
 import com.example.mypokedex.data.localDataBase.PokemonDao
 import com.example.mypokedex.data.localDataBase.PokemonEntity
 import com.example.mypokedex.data.localDataBase.PokemonRemoteMediator
+import com.example.mypokedex.data.model.response.EvolutionChainResponse
 import com.example.mypokedex.data.model.response.Pokemon
 import com.example.mypokedex.data.model.response.PokemonDetails
+import com.example.mypokedex.data.model.response.PokemonSpeciesResponse
+import com.example.mypokedex.data.model.response.PokemonSpeciesResponseText
 import com.example.mypokedex.data.model.response.ResultPokemon
+import com.example.mypokedex.data.model.response.TypeResponse
 import com.example.mypokedex.domain.repo.PokemonRepository
 import com.example.mypokedex.presentation.viewModels.PokemonPagingSource
 import kotlinx.coroutines.flow.Flow
 
-class PokemonRepositoryImp(private val apiService: ApiService, private val pokemonDao: PokemonDao): PokemonRepository {
+ class PokemonRepositoryImp(private val apiService: ApiService, private val pokemonDao: PokemonDao): PokemonRepository {
 
     override suspend fun getPokemonList(limit: Int, offset: Int): Pokemon{
             return apiService.getPokemonList(limit,offset)
@@ -45,5 +49,21 @@ class PokemonRepositoryImp(private val apiService: ApiService, private val pokem
         return PokemonPagingSource(apiService)
     }
 
+    override suspend fun getPokemonWeekness(type: String): TypeResponse {
+        return  apiService.getPokemonTypeByName(type)
+    }
 
-}
+     override suspend fun getPokemonGenderRate(pokemonName: String): PokemonSpeciesResponse {
+     return apiService.getGenderRate(pokemonName)
+     }
+
+     override suspend fun getPokemonDetailsText(pokemonName: String): PokemonSpeciesResponseText {
+         return apiService.getPokemonDetails(pokemonName)
+     }
+
+     override suspend fun getEvolutionChain(id: Int): EvolutionChainResponse {
+         return apiService.getEvolutionChain(id)
+     }
+
+
+ }

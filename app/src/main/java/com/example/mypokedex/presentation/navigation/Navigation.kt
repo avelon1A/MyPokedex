@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.mypokedex.presentation.common.Header
 import com.example.mypokedex.presentation.screen.HomeScreen
 import com.example.mypokedex.presentation.screen.OnBoardingScreen
 import com.example.mypokedex.presentation.screen.PokemonDetailScreen
@@ -48,6 +49,12 @@ fun AppNavHost(
             composable<OnBoardingScreen> {
                 val viewModel: OnBoardingViewModel = koinViewModel()
                 OnBoardingScreen(navController = navController,event = viewModel::OnEvent)
+
+            }
+            composable<Header> {
+                val viewModel: HomeViewModel = koinViewModel()
+                val pokemonDetails = it.toRoute<PokemonDetailScreen>()
+                Header( viewModel = viewModel, pokemonName = pokemonDetails.pokemonName, image = pokemonDetails.image)
 
             }
 

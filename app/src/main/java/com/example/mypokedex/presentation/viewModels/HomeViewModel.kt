@@ -7,8 +7,9 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.map
+import com.example.mypokedex.data.model.response.DamageRelations
 import com.example.mypokedex.data.model.response.PokemonDetails
+import com.example.mypokedex.data.model.response.PokemonSpeciesResponse
 import com.example.mypokedex.data.model.response.ResultPokemon
 import com.example.mypokedex.domain.repo.PokemonRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +28,21 @@ class HomeViewModel(
     var pokemonData = _pokemonData.asStateFlow()
         private set
 
+
+    private val _pokemonWeeknessData: MutableStateFlow<List<String>?> = MutableStateFlow(null)
+    var pokemonWeeknessData = _pokemonWeeknessData.asStateFlow()
+        private set
+
+    private val _pokemonGenderRate: MutableStateFlow<PokemonSpeciesResponse?> = MutableStateFlow(null)
+    var  pokemonGenderRate = _pokemonGenderRate.asStateFlow()
+        private set
+
+    private val _pokemonDetailString: MutableStateFlow<String?> = MutableStateFlow(null)
+    var  pokemonDetailString = _pokemonDetailString.asStateFlow()
+        private set
+
+
+
     init {
         fetchPokemonList()
     }
@@ -34,7 +50,7 @@ class HomeViewModel(
     private fun fetchPokemonList() {
         viewModelScope.launch {
             Pager(
-                config = PagingConfig(pageSize = 20, enablePlaceholders = false)
+                config = PagingConfig(pageSize = 5, enablePlaceholders = false)
             ) {
                 pokemonRepository.getPokemonPagingSource()
             }.flow.cachedIn(viewModelScope)
@@ -52,6 +68,39 @@ class HomeViewModel(
         viewModelScope.launch {
             val data = pokemonRepository.getPokemonDetails(pokemonName)
             _pokemonData.value = data
+            getpokemonWeekness(data.types[0].type.name)
+            getPokemonGenderRate(pokemonName)
+            getPokemonDetailsText(pokemonName)
+        }
+    }
+    private fun getpokemonWeekness(type: String){
+        viewModelScope.launch {
+            val data = pokemonRepository.getPokemonWeekness(type)
+            _pokemonWeeknessData.value = extractTypeNames(data.damage_relations)
+        }
+
+    }
+
+    fun extractTypeNames(damageRelations: DamageRelations): List<String> {
+        val typeNames = mutableListOf<String>()
+
+        typeNames.addAll(damageRelations.double_damage_from.map { it.name })
+        typeNames.addAll(damageRelations.half_damage_from.map { it.name })
+        typeNames.addAll(damageRelations.no_damage_from.map { it.name })
+
+        return typeNames
+    }
+
+    private fun getPokemonGenderRate(pokemonName: String){
+        viewModelScope.launch {
+            val data = pokemonRepository.getPokemonGenderRate(pokemonName)
+            _pokemonGenderRate.value = data
+        }
+    }
+    private fun getPokemonDetailsText(pokemonName: String){
+        viewModelScope.launch {
+            val data = pokemonRepository.getPokemonDetailsText(pokemonName)
+            _pokemonDetailString.value = data.flavor_text_entries[0].flavor_text
         }
     }
 }

@@ -26,8 +26,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.mypokedex.presentation.common.Header
 import com.example.mypokedex.presentation.common.PokemonCardNew
 import com.example.mypokedex.presentation.viewModels.HomeViewModel
+import com.example.mypokedex.util.extractPokemonNumberFromUrl
 import kotlinx.serialization.Serializable
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,10 +98,12 @@ fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
                             pokemonName = pokemon.name,
                             image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonNumber}.png",
                             onClick = {
-                                navController.navigate(PokemonDetailScreen(
+                                navController.navigate(
+                                    Header(
                                     pokemonName = pokemon.name,
                                     image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonNumber}.png"
-                                ))
+                                )
+                                )
 
                             }
                             , type = pokemon.types
@@ -112,11 +116,7 @@ fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
         }
     )
 }
-fun extractPokemonNumberFromUrl(url: String): Int? {
-    val regex = """pokemon/(\d+)/""".toRegex()
-    val matchResult = regex.find(url)
-    return matchResult?.groups?.get(1)?.value?.toIntOrNull()
-}
+
 
 
 @Serializable

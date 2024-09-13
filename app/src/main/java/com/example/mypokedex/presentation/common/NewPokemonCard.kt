@@ -136,7 +136,7 @@ fun PokemonCardNew(modifier: Modifier = Modifier, image:String, pokemonName: Str
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
             ) {
-                Property1Grama(image = pokemonSmallBackground, type = type[0],color = dominantColor.value)
+                PokemonTypeView( type = type[0])
                 if (type.size > 1){
                     Property1Venenoso(image2 = pokemonSmallBackgroundTwo, type = type[1],color = dominantColortwo.value)
                 }
@@ -168,53 +168,6 @@ fun Property1Bulbasaur(modifier: Modifier = Modifier, image: String) {
     }
 }
 
-@Composable
-fun Property1Grama(modifier: Modifier = Modifier, image: Int, type: String, color: Color) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(5.803922653198242.dp, Alignment.CenterVertically),
-        modifier = modifier
-            .clip(shape = RoundedCornerShape(48.607852935791016.dp))
-            .background(color =color)
-            .padding(
-                horizontal = 6.dp,
-                vertical = 2.901961326599121.dp
-            )
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(5.803922653198242.dp, Alignment.Start),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .requiredSize(size = 20.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .requiredSize(size = 20.dp)
-                        .clip(shape = CircleShape)
-                        .background(color = Color.White))
-                Image(
-                    painter = painterResource(id = image),
-                    contentDescription = "grass",
-                    colorFilter = ColorFilter.tint(color),
-                    modifier = Modifier
-                        .align(alignment = Alignment.TopStart)
-                        .offset(
-                            x = 3.6279296875.dp,
-                            y = 3.62744140625.dp
-                        )
-                        .requiredSize(size = 13.dp))
-            }
-            Text(
-                text = type,
-                color = Color.Black,
-                style = TextStyle(
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium)
-            )
-        }
-    }
-}
 
 @Composable
 fun Property1Venenoso(modifier: Modifier = Modifier, image2: Int, type: String, color: Color) {
