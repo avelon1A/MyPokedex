@@ -26,7 +26,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.example.mypokedex.presentation.common.Header
 import com.example.mypokedex.presentation.common.PokemonCardNew
 import com.example.mypokedex.presentation.viewModels.HomeViewModel
 import com.example.mypokedex.util.extractPokemonNumberFromUrl
@@ -100,7 +99,7 @@ fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
                             onClick = {
                                 navController.navigate(
                                     Header(
-                                    pokemonName = pokemon.name,
+                                    pokemonName = pokemonNumber!!,
                                     image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonNumber}.png"
                                 )
                                 )
