@@ -1,5 +1,8 @@
 package com.example.mypokedex.util
 
+import com.example.mypokedex.data.model.response.Chain
+import com.example.mypokedex.data.model.response.EvolveTo
+
 
 fun getGender(genderRate: Int): Float {
     return when(genderRate){
@@ -40,3 +43,22 @@ fun extractPokemonNumberFromUrl(url: String): Int? {
 fun removeNewlines(text: String): String {
     return text.replace("\n", " ")
 }
+fun extractPokemonNumberFromUrl2(url: String): Int? {
+    val regex = """pokemon-species/(\d+)/""".toRegex()
+    val matchResult = regex.find(url)
+    return matchResult?.groups?.get(1)?.value?.toIntOrNull()
+}
+
+
+fun countTotalEvolutions(chain: Chain): Int {
+    fun countEvolutionsRecursive(evolvesToList: List<EvolveTo>): Int {
+        var count = 0
+        for (evolveTo in evolvesToList) {
+            count += 1
+            count += countEvolutionsRecursive(evolveTo.evolves_to)
+        }
+        return count
+    }
+    return countEvolutionsRecursive(chain.evolves_to)
+}
+
