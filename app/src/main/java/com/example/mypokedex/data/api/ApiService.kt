@@ -7,6 +7,7 @@ import com.example.mypokedex.data.model.response.PokemonSpeciesResponse
 import com.example.mypokedex.data.model.response.PokemonSpeciesResponseText
 import com.example.mypokedex.data.model.response.TypeResponse
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -21,7 +22,7 @@ interface ApiService {
 
     @GET("pokemon/{name}")
     suspend fun getPokemonData(
-        @Path("name") name: String
+        @Path("name") name: Any
 
     ):PokemonDetails
 
@@ -42,8 +43,9 @@ interface ApiService {
     ): PokemonSpeciesResponseText
 
     @GET("evolution-chain/{id}")
-    fun getEvolutionChain(
-        @Path("id") id: Int): EvolutionChainResponse
+   suspend fun getEvolutionChain(
+        @Path("id") id: Int): Response<EvolutionChainResponse>
+
 
 
 }
