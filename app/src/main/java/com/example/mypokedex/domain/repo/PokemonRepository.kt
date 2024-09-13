@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface PokemonRepository {
     suspend fun getPokemonList(limit: Int, offset: Int): Pokemon
-    suspend fun getPokemonDetails(pokemonName: String): PokemonDetails
+    suspend fun getPokemonDetails(pokemonName: Int): PokemonDetails
     fun getPokemonFromDb(): Flow<PagingData<PokemonEntity>>
     suspend fun clearCachedPokemon()
     suspend fun cachePokemon(pokemonEntities: List<PokemonEntity>)
@@ -22,6 +22,6 @@ interface PokemonRepository {
     suspend fun getPokemonWeekness(type:String): TypeResponse
     suspend fun getPokemonGenderRate(pokemonName: String): PokemonSpeciesResponse
     suspend fun getPokemonDetailsText(pokemonName: String): PokemonSpeciesResponseText
-    suspend fun getEvolutionChain(id: Int): EvolutionChainResponse
+    suspend fun getEvolutionChain(id: Int): EvolutionChainResponse?
 
 }
