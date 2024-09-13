@@ -47,7 +47,6 @@ fun PokemonCardNew(modifier: Modifier = Modifier, image:String, pokemonName: Str
     val dominantColor = remember { mutableStateOf(Color.Transparent) }
     val dominantColortwo = remember { mutableStateOf(Color.Transparent) }
     val pokemonBackgroundImage = getPokemonBackground(type[0])
-    val pokemonSmallBackground = getPokemonSmallBackground(type[0])
     var pokemonSmallBackgroundTwo = 0
     if (type.size > 1){
         pokemonSmallBackgroundTwo = getPokemonSmallBackground(type[1])
@@ -56,7 +55,6 @@ fun PokemonCardNew(modifier: Modifier = Modifier, image:String, pokemonName: Str
 
 
     LaunchedEffect(image) {
-//        dominantColor.value = getDominantColorFromImage(context,image , imageLoader)
         dominantColor.value = getTypeColor(type[0])
         if (type.size > 1){
             dominantColortwo.value = getTypeColor(type[1])
