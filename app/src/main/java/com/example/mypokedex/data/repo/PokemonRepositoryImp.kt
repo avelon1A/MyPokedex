@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.Flow
             return apiService.getPokemonList(limit,offset)
     }
 
-    override suspend fun getPokemonDetails(pokemonName: String): PokemonDetails {
+    override suspend fun getPokemonDetails(pokemonName: Int): PokemonDetails {
         return apiService.getPokemonData(pokemonName)
     }
 
@@ -61,8 +61,12 @@ import kotlinx.coroutines.flow.Flow
          return apiService.getPokemonDetails(pokemonName)
      }
 
-     override suspend fun getEvolutionChain(id: Int): EvolutionChainResponse {
-         return apiService.getEvolutionChain(id)
+     override suspend fun getEvolutionChain(id: Int): EvolutionChainResponse? {
+         val response = apiService.getEvolutionChain(id)
+         return if(response.isSuccessful){
+             response.body()
+         } else{ null }
+
      }
 
 
