@@ -11,7 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.mypokedex.presentation.common.Header
+import com.example.mypokedex.presentation.screen.Header
 import com.example.mypokedex.presentation.screen.HomeScreen
 import com.example.mypokedex.presentation.screen.OnBoardingScreen
 import com.example.mypokedex.presentation.viewModels.HomeViewModel
