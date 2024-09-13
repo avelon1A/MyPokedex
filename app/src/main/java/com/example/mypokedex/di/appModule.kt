@@ -17,6 +17,7 @@ import com.example.mypokedex.presentation.viewModels.HomeViewModel
 import com.example.mypokedex.presentation.viewModels.OnBoardingViewModel
 import com.example.mypokedex.presentation.viewModels.PokemonPagingSource
 import com.example.mypokedex.util.Const.BASE_URL
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -56,6 +57,7 @@ fun provideRetrofit(): Retrofit {
     return Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .build()
 }
 
