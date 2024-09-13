@@ -8,6 +8,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.mypokedex.data.model.response.DamageRelations
+import com.example.mypokedex.data.model.response.EvolutionChainResponse
 import com.example.mypokedex.data.model.response.PokemonDetails
 import com.example.mypokedex.data.model.response.PokemonSpeciesResponse
 import com.example.mypokedex.data.model.response.ResultPokemon
@@ -40,6 +41,11 @@ class HomeViewModel(
     private val _pokemonDetailString: MutableStateFlow<String?> = MutableStateFlow(null)
     var  pokemonDetailString = _pokemonDetailString.asStateFlow()
         private set
+    private val _pokemonEvolution: MutableStateFlow<EvolutionChainResponse?> = MutableStateFlow(null)
+    var  pokemonEvolution = _pokemonEvolution.asStateFlow()
+        private set
+
+
 
 
 
@@ -50,7 +56,7 @@ class HomeViewModel(
     private fun fetchPokemonList() {
         viewModelScope.launch {
             Pager(
-                config = PagingConfig(pageSize = 5, enablePlaceholders = false)
+                config = PagingConfig(pageSize = 20, enablePlaceholders = false)
             ) {
                 pokemonRepository.getPokemonPagingSource()
             }.flow.cachedIn(viewModelScope)
@@ -64,13 +70,14 @@ class HomeViewModel(
 
 
 
-    fun getPokemonData(pokemonName: String) {
+    fun getPokemonData(pokemonName: Int) {
         viewModelScope.launch {
             val data = pokemonRepository.getPokemonDetails(pokemonName)
             _pokemonData.value = data
             getpokemonWeekness(data.types[0].type.name)
-            getPokemonGenderRate(pokemonName)
-            getPokemonDetailsText(pokemonName)
+            getPokemonGenderRate(data.name)
+            getPokemonDetailsText(data.name)
+            getPokemonEvolution(pokemonName)
         }
     }
     private fun getpokemonWeekness(type: String){
@@ -101,6 +108,12 @@ class HomeViewModel(
         viewModelScope.launch {
             val data = pokemonRepository.getPokemonDetailsText(pokemonName)
             _pokemonDetailString.value = data.flavor_text_entries[0].flavor_text
+        }
+    }
+    private fun getPokemonEvolution(pokemonId: Int){
+        viewModelScope.launch {
+            val data = pokemonRepository.getEvolutionChain(pokemonId)
+            _pokemonEvolution.value = data
         }
     }
 }
