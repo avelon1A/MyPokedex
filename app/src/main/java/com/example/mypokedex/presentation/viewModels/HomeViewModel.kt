@@ -13,6 +13,8 @@ import com.example.mypokedex.data.model.response.PokemonDetails
 import com.example.mypokedex.data.model.response.PokemonSpeciesResponse
 import com.example.mypokedex.data.model.response.ResultPokemon
 import com.example.mypokedex.domain.repo.PokemonRepository
+import com.example.mypokedex.util.extractIdFromUrl
+import com.example.mypokedex.util.extractPokemonNumberFromUrl2
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -34,19 +36,18 @@ class HomeViewModel(
     var pokemonWeeknessData = _pokemonWeeknessData.asStateFlow()
         private set
 
-    private val _pokemonGenderRate: MutableStateFlow<PokemonSpeciesResponse?> = MutableStateFlow(null)
-    var  pokemonGenderRate = _pokemonGenderRate.asStateFlow()
+    private val _pokemonGenderRate: MutableStateFlow<PokemonSpeciesResponse?> =
+        MutableStateFlow(null)
+    var pokemonGenderRate = _pokemonGenderRate.asStateFlow()
         private set
 
     private val _pokemonDetailString: MutableStateFlow<String?> = MutableStateFlow(null)
-    var  pokemonDetailString = _pokemonDetailString.asStateFlow()
+    var pokemonDetailString = _pokemonDetailString.asStateFlow()
         private set
-    private val _pokemonEvolution: MutableStateFlow<EvolutionChainResponse?> = MutableStateFlow(null)
-    var  pokemonEvolution = _pokemonEvolution.asStateFlow()
+    private val _pokemonEvolution: MutableStateFlow<EvolutionChainResponse?> =
+        MutableStateFlow(null)
+    var pokemonEvolution = _pokemonEvolution.asStateFlow()
         private set
-
-
-
 
 
     init {
@@ -68,8 +69,6 @@ class HomeViewModel(
     }
 
 
-
-
     fun getPokemonData(pokemonName: Int) {
         viewModelScope.launch {
             val data = pokemonRepository.getPokemonDetails(pokemonName)
@@ -77,10 +76,13 @@ class HomeViewModel(
             getpokemonWeekness(data.types[0].type.name)
             getPokemonGenderRate(data.name)
             getPokemonDetailsText(data.name)
-            getPokemonEvolution(pokemonName)
+
         }
     }
-    private fun getpokemonWeekness(type: String){
+
+
+
+    private fun getpokemonWeekness(type: String) {
         viewModelScope.launch {
             val data = pokemonRepository.getPokemonWeekness(type)
             _pokemonWeeknessData.value = extractTypeNames(data.damage_relations)
@@ -98,19 +100,25 @@ class HomeViewModel(
         return typeNames
     }
 
-    private fun getPokemonGenderRate(pokemonName: String){
+    private fun getPokemonGenderRate(pokemonName: String) {
         viewModelScope.launch {
             val data = pokemonRepository.getPokemonGenderRate(pokemonName)
             _pokemonGenderRate.value = data
+            val pokemonNumber = extractIdFromUrl(data.evolution_chain.url)
+            if (pokemonNumber != null) {
+                getPokemonEvolution(pokemonNumber)
+            }
         }
     }
-    private fun getPokemonDetailsText(pokemonName: String){
+
+    private fun getPokemonDetailsText(pokemonName: String) {
         viewModelScope.launch {
             val data = pokemonRepository.getPokemonDetailsText(pokemonName)
             _pokemonDetailString.value = data.flavor_text_entries[0].flavor_text
         }
     }
-    private fun getPokemonEvolution(pokemonId: Int){
+
+    private fun getPokemonEvolution(pokemonId: Int) {
         viewModelScope.launch {
             val data = pokemonRepository.getEvolutionChain(pokemonId)
             _pokemonEvolution.value = data

@@ -49,7 +49,6 @@ fun extractPokemonNumberFromUrl2(url: String): Int? {
     return matchResult?.groups?.get(1)?.value?.toIntOrNull()
 }
 
-
 fun countTotalEvolutions(chain: Chain): Int {
     fun countEvolutionsRecursive(evolvesToList: List<EvolveTo>): Int {
         var count = 0
@@ -61,4 +60,6 @@ fun countTotalEvolutions(chain: Chain): Int {
     }
     return countEvolutionsRecursive(chain.evolves_to)
 }
-
+fun extractIdFromUrl(url: String): Int? {
+    return url.split("/").dropLast(1).last().toIntOrNull()
+}
