@@ -75,7 +75,7 @@ fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp)
-                        .padding(bottom = 100.dp).background(Color.Green))
+                        .padding(bottom = 100.dp).background(Color.Green),color = Color.Green)
 
                 }
 

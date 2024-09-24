@@ -1,4 +1,4 @@
-package com.bosch.composewithkotlin20.domain.usecases
+package com.example.mypokedex.domain.usecases
 
 import com.example.mypokedex.domain.manger.LocalUserManager
 

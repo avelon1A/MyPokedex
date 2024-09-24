@@ -7,6 +7,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.example.mypokedex.data.localDataBase.PokemonEntity
 import com.example.mypokedex.data.model.response.DamageRelations
 import com.example.mypokedex.data.model.response.EvolutionChainResponse
 import com.example.mypokedex.data.model.response.PokemonDetails
@@ -14,7 +15,6 @@ import com.example.mypokedex.data.model.response.PokemonSpeciesResponse
 import com.example.mypokedex.data.model.response.ResultPokemon
 import com.example.mypokedex.domain.repo.PokemonRepository
 import com.example.mypokedex.util.extractIdFromUrl
-import com.example.mypokedex.util.extractPokemonNumberFromUrl2
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -24,7 +24,7 @@ class HomeViewModel(
     private val pokemonRepository: PokemonRepository
 ) : ViewModel() {
 
-    private val _pokemonList = MutableStateFlow<PagingData<ResultPokemon>>(PagingData.empty())
+    private val _pokemonList = MutableStateFlow<PagingData<PokemonEntity>>(PagingData.empty())
     val pokemonList = _pokemonList.asStateFlow()
 
     private val _pokemonData: MutableStateFlow<PokemonDetails?> = MutableStateFlow(null)
@@ -51,19 +51,15 @@ class HomeViewModel(
 
 
     init {
-        fetchPokemonList()
+        observePokemonFromDb()
     }
-
-    private fun fetchPokemonList() {
+    private fun observePokemonFromDb() {
         viewModelScope.launch {
-            Pager(
-                config = PagingConfig(pageSize = 20, enablePlaceholders = false)
-            ) {
-                pokemonRepository.getPokemonPagingSource()
-            }.flow.cachedIn(viewModelScope)
+            pokemonRepository.getPokemonFromDb()
+                .cachedIn(viewModelScope)
                 .collectLatest { pagingData ->
                     _pokemonList.value = pagingData
-                    Log.d("HomeViewModel", "Fetched Pokemon List: $pagingData")
+                    Log.d("HomeViewModel", "Fetched Pokémon from DB: $pagingData")
                 }
         }
     }
@@ -90,7 +86,7 @@ class HomeViewModel(
 
     }
 
-    fun extractTypeNames(damageRelations: DamageRelations): List<String> {
+    private fun extractTypeNames(damageRelations: DamageRelations): List<String> {
         val typeNames = mutableListOf<String>()
 
         typeNames.addAll(damageRelations.double_damage_from.map { it.name })

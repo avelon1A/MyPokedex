@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.Flow
     @OptIn(ExperimentalPagingApi::class)
     override fun getPokemonFromDb(): Flow<PagingData<PokemonEntity>> {
         return Pager(
-            config = PagingConfig(pageSize = 100, enablePlaceholders = false,prefetchDistance = 2),
+            config = PagingConfig(pageSize = 1000, enablePlaceholders = false,prefetchDistance = 2),
             remoteMediator = PokemonRemoteMediator(apiService, pokemonDao),
             pagingSourceFactory = { pokemonDao.getAllPokemon() }
         ).flow

@@ -2,10 +2,13 @@ package com.example.mypokedex.data.localDataBase
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
+import androidx.paging.PagingSource.LoadParams
+import androidx.paging.PagingSource.LoadResult
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.example.mypokedex.data.api.ApiService
 import com.example.mypokedex.data.model.response.PokemonDetails
+import com.example.mypokedex.data.model.response.ResultPokemon
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -26,7 +29,7 @@ class PokemonRemoteMediator(
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
                     val lastItem = state.lastItemOrNull()
-                    val nextPage = lastItem?.let { (state.config.pageSize / 2) + 1 } ?: 1
+                    val nextPage = lastItem?.let { (state.config.pageSize ) + 1 } ?: 1
                     nextPage
                 }
             }
