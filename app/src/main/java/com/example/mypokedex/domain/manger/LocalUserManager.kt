@@ -8,5 +8,4 @@ interface LocalUserManager {
 	suspend fun loginStatus()
 	fun readLoginStatus(): Flow<Boolean>
 
-	
 }
