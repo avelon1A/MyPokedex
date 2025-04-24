@@ -11,13 +11,16 @@ import com.example.mypokedex.data.localDataBase.PokemonEntity
 import com.example.mypokedex.data.model.response.DamageRelations
 import com.example.mypokedex.data.model.response.EvolutionChainResponse
 import com.example.mypokedex.data.model.response.PokemonDetails
+import com.example.mypokedex.data.model.response.PokemonDto
 import com.example.mypokedex.data.model.response.PokemonSpeciesResponse
 import com.example.mypokedex.data.model.response.ResultPokemon
 import com.example.mypokedex.domain.repo.PokemonRepository
 import com.example.mypokedex.util.extractIdFromUrl
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
@@ -26,6 +29,20 @@ class HomeViewModel(
 
     private val _pokemonList = MutableStateFlow<PagingData<PokemonEntity>>(PagingData.empty())
     val pokemonList = _pokemonList.asStateFlow()
+
+    val pokemonList1 = Pager(
+        config = PagingConfig(
+            pageSize = 20,
+            enablePlaceholders = false
+        ),
+        pagingSourceFactory = { pokemonRepository.getPokemonPagingSource() }
+    ).flow
+        .cachedIn(viewModelScope)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = PagingData.empty()
+        )
 
     private val _pokemonData: MutableStateFlow<PokemonDetails?> = MutableStateFlow(null)
     var pokemonData = _pokemonData.asStateFlow()
@@ -50,9 +67,9 @@ class HomeViewModel(
         private set
 
 
-    init {
-        observePokemonFromDb()
-    }
+//    init {
+//        observePokemonFromDb()
+//    }
     private fun observePokemonFromDb() {
         viewModelScope.launch {
             pokemonRepository.getPokemonFromDb()

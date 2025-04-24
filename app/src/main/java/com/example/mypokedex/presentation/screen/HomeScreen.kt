@@ -35,15 +35,16 @@ import kotlinx.serialization.Serializable
 @Composable
 fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
 
-    val pokemonList = viewModel.pokemonList.collectAsLazyPagingItems()
+//    val pokemonList = viewModel.pokemonList.collectAsLazyPagingItems()
+    val pokemonList1 = viewModel.pokemonList1.collectAsLazyPagingItems()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    Log.d("HomeScreen", "Pokemon List: $pokemonList")
-    LaunchedEffect(pokemonList.itemCount) {
-        Log.d("HomeScreen", "Pokemon List Size: ${pokemonList.itemCount}")
-        pokemonList.itemSnapshotList.forEach { item ->
-            Log.d("HomeScreen", "Pokemon Item: $item")
-        }
-    }
+//    Log.d("HomeScreen", "Pokemon List: $pokemonList")
+//    LaunchedEffect(pokemonList.itemCount) {
+//        Log.d("HomeScreen", "Pokemon List Size: ${pokemonList.itemCount}")
+//        pokemonList.itemSnapshotList.forEach { item ->
+//            Log.d("HomeScreen", "Pokemon Item: $item")
+//        }
+//    }
 
     Scaffold(
         modifier = Modifier
@@ -70,7 +71,7 @@ fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
             )
         },
         content = { innerPadding ->
-            if(pokemonList.itemCount == 0){
+            if(pokemonList1.itemCount == 0){
                 Column(modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally) {
@@ -89,8 +90,8 @@ fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
                     .fillMaxSize()
                     .padding(18.dp)
             ) {
-                items(pokemonList.itemCount) { pokemonIndex ->
-                    pokemonList[pokemonIndex]?.let { pokemon ->
+                items(pokemonList1.itemCount) { pokemonIndex ->
+                    pokemonList1[pokemonIndex]?.let { pokemon ->
                         val pokemonNumber = extractPokemonNumberFromUrl(pokemon.url)
 
                         PokemonCardNew(

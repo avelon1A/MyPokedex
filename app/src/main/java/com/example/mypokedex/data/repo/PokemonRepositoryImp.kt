@@ -30,14 +30,18 @@ import kotlinx.coroutines.flow.Flow
         return apiService.getPokemonData(pokemonName)
     }
 
-    @OptIn(ExperimentalPagingApi::class)
-    override fun getPokemonFromDb(): Flow<PagingData<PokemonEntity>> {
-        return Pager(
-            config = PagingConfig(pageSize = 1000, enablePlaceholders = false,prefetchDistance = 2),
-            remoteMediator = PokemonRemoteMediator(apiService, pokemonDao),
-            pagingSourceFactory = { pokemonDao.getAllPokemon() }
-        ).flow
-    }
+     override fun getPokemonFromDb(): Flow<PagingData<PokemonEntity>> {
+         TODO("Not yet implemented")
+     }
+//
+//    @OptIn(ExperimentalPagingApi::class)
+//    override fun getPokemonFromDb(): Flow<PagingData<PokemonEntity>> {
+//        return Pager(
+//            config = PagingConfig(pageSize = 100, enablePlaceholders = false,prefetchDistance = 2),
+//            remoteMediator = PokemonRemoteMediator(apiService, pokemonDao),
+//            pagingSourceFactory = { pokemonDao.getAllPokemon() }
+//        ).flow
+//    }
 
     override suspend fun clearCachedPokemon() {
         pokemonDao.clearAll()

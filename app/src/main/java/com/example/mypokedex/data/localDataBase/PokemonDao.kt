@@ -14,7 +14,7 @@ import androidx.room.TypeConverters
 interface PokemonDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(pokemonList: List<PokemonEntity>)
+    suspend fun insertAll(pokemon: List<PokemonEntity>)
 
     @Query("SELECT * FROM pokemon")
     fun getAllPokemon(): PagingSource<Int, PokemonEntity>
@@ -23,8 +23,7 @@ interface PokemonDao {
     suspend fun clearAll()
 }
 
-@Database(entities = [PokemonEntity::class], version = 1, exportSchema = false)
-@TypeConverters(Converters::class)
+@Database(entities = [PokemonEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun pokemonDao(): PokemonDao
 }
