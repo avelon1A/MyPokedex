@@ -16,10 +16,10 @@ interface PokemonDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(pokemon: List<PokemonEntity>)
 
-    @Query("SELECT * FROM pokemon")
+    @Query("SELECT * FROM pokemonDB")
     fun getAllPokemon(): PagingSource<Int, PokemonEntity>
 
-    @Query("DELETE FROM pokemon")
+    @Query("DELETE FROM pokemonDB")
     suspend fun clearAll()
 }
 

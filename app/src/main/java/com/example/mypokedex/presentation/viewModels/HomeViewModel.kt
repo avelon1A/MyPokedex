@@ -3,11 +3,15 @@ package com.example.mypokedex.presentation.viewModels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.example.mypokedex.data.api.ApiService
+import com.example.mypokedex.data.localDataBase.AppDatabase
 import com.example.mypokedex.data.localDataBase.PokemonEntity
+import com.example.mypokedex.data.localDataBase.PokemonRemoteMediator
 import com.example.mypokedex.data.model.response.DamageRelations
 import com.example.mypokedex.data.model.response.EvolutionChainResponse
 import com.example.mypokedex.data.model.response.PokemonDetails
@@ -24,18 +28,24 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val pokemonRepository: PokemonRepository
+    private val pokemonRepository: PokemonRepository,
+    private val apiService: ApiService,
+    private val database: AppDatabase
 ) : ViewModel() {
 
     private val _pokemonList = MutableStateFlow<PagingData<PokemonEntity>>(PagingData.empty())
     val pokemonList = _pokemonList.asStateFlow()
 
+    @OptIn(ExperimentalPagingApi::class)
     val pokemonList1 = Pager(
         config = PagingConfig(
             pageSize = 20,
             enablePlaceholders = false
         ),
-        pagingSourceFactory = { pokemonRepository.getPokemonPagingSource() }
+        remoteMediator = PokemonRemoteMediator(apiService, database),
+        pagingSourceFactory = {
+            database.pokemonDao().getAllPokemon()
+        }
     ).flow
         .cachedIn(viewModelScope)
         .stateIn(

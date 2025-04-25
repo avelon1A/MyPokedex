@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 
-@Entity(tableName = "pokemon")
+@Entity(tableName = "pokemonDB")
 @TypeConverters(Converters::class)
 data class PokemonEntity(
     @PrimaryKey val name: String,
