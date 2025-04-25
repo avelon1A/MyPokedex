@@ -33,8 +33,6 @@ class HomeViewModel(
     private val database: AppDatabase
 ) : ViewModel() {
 
-    private val _pokemonList = MutableStateFlow<PagingData<PokemonEntity>>(PagingData.empty())
-    val pokemonList = _pokemonList.asStateFlow()
 
     @OptIn(ExperimentalPagingApi::class)
     val pokemonList1 = Pager(
@@ -75,21 +73,6 @@ class HomeViewModel(
         MutableStateFlow(null)
     var pokemonEvolution = _pokemonEvolution.asStateFlow()
         private set
-
-
-//    init {
-//        observePokemonFromDb()
-//    }
-    private fun observePokemonFromDb() {
-        viewModelScope.launch {
-            pokemonRepository.getPokemonFromDb()
-                .cachedIn(viewModelScope)
-                .collectLatest { pagingData ->
-                    _pokemonList.value = pagingData
-                    Log.d("HomeViewModel", "Fetched Pokémon from DB: $pagingData")
-                }
-        }
-    }
 
 
     fun getPokemonData(pokemonName: Int) {
