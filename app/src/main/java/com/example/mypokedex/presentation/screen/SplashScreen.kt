@@ -14,7 +14,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mypokedex.R
-import kotlinx.serialization.Serializable
 
 @Preview(showBackground = true)
 @Composable
@@ -25,5 +24,3 @@ fun SplashScreen() {
     }
 
 }
-@Serializable
-object SplashScreen

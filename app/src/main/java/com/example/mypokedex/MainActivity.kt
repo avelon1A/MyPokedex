@@ -14,8 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.mypokedex.data.manager.PokemonSyncWorker
 import com.example.mypokedex.presentation.common.PokemonCard
 import com.example.mypokedex.presentation.navigation.AppNavHost
+import com.example.mypokedex.presentation.navigation.Screen
 import com.example.mypokedex.presentation.screen.HomeScreen
 import com.example.mypokedex.presentation.screen.OnBoardingScreen
 import com.example.mypokedex.presentation.ui.theme.MyPokedexTheme
@@ -23,6 +27,10 @@ import com.example.mypokedex.presentation.ui.theme.MyPokedexTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WorkManager.getInstance(applicationContext).enqueue(
+            OneTimeWorkRequestBuilder<PokemonSyncWorker>()
+                .build()
+        )
         installSplashScreen().apply {
             setKeepOnScreenCondition {
                false
@@ -34,7 +42,7 @@ class MainActivity : ComponentActivity() {
                 AppNavHost(
                     navController = navController,
                     modifier = Modifier.padding(),
-                    startDestination = OnBoardingScreen
+                    startDestination = Screen.OnBoardingScreen
                 )
 
             }

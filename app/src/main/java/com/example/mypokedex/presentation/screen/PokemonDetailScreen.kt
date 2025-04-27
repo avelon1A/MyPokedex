@@ -1,11 +1,13 @@
 package com.example.mypokedex.presentation.screen
 
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,12 +29,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,7 +45,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,42 +52,56 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
 import com.example.mypokedex.R
-import com.example.mypokedex.data.model.response.EvolutionChainResponse
+import com.example.mypokedex.data.model.PokemonDetailData
 import com.example.mypokedex.data.model.response.PokemonDetails
-import com.example.mypokedex.presentation.common.CardEvoluo
+import com.example.mypokedex.presentation.common.EvolutionTab
+import com.example.mypokedex.presentation.common.PokemonDetailsHW
 import com.example.mypokedex.presentation.common.PokemonTypeView
 import com.example.mypokedex.presentation.common.getIconDescibe
 import com.example.mypokedex.presentation.common.getPokemonBackground
 import com.example.mypokedex.presentation.common.getTypeColor
 import com.example.mypokedex.presentation.viewModels.HomeViewModel
-import com.example.mypokedex.util.countTotalEvolutions
+import com.example.mypokedex.presentation.viewModels.UiState
 import com.example.mypokedex.util.getGender
 import com.example.mypokedex.util.getGenderPrecentageMale
 import com.example.mypokedex.util.getGenderPrecentagefemale
 import com.example.mypokedex.util.removeNewlines
-import kotlinx.serialization.Serializable
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun Header(modifier: Modifier = Modifier,  pokemonName: Int, viewModel: HomeViewModel,image: String) {
+fun Header(modifier: Modifier = Modifier, pokemonName: Int, viewModel: HomeViewModel, image: String, sharedTransitionScope: SharedTransitionScope,
+           animatedContentScope: AnimatedContentScope
+) {
 
-    val pokemonDetails by viewModel.pokemonData.collectAsState()
-    val pokemonWeekNess by viewModel.pokemonWeeknessData.collectAsState()
-    val genderRate by viewModel.pokemonGenderRate.collectAsState()
-    val pokemonDescription by viewModel.pokemonDetailString.collectAsState()
-    val pokemonEvolution by viewModel.pokemonEvolution.collectAsState()
-    val firstType = pokemonDetails?.types?.get(0)?.type?.name
+    val pokemonDetail by viewModel.pokemonDetailData.collectAsState()
+    var pokemonDetailData by remember { mutableStateOf(PokemonDetailData()) }
+    var loading by remember { mutableStateOf(false) }
+    when(pokemonDetail){
+        is UiState.Error -> {
+            val errorMessage = (pokemonDetail as? UiState.Error)?.message ?: "An unexpected error occurred"
+            Text(text = errorMessage)
+        }
+        is UiState.Success -> {
+            loading = false
+            pokemonDetailData = (pokemonDetail as? UiState.Success<PokemonDetailData>)?.data!!
+            }
 
+        UiState.Loading -> {
+            loading = true
+        }
+    }
+    val firstType = pokemonDetailData.pokemonDetails?.types?.get(0)?.type?.name
     val pokemonBackgroundImage = firstType?.let { getPokemonBackground(it) }
     val pokemonBackgroundColor = firstType?.let { getTypeColor(it) }
     val scrollState = rememberScrollState()
     LaunchedEffect(pokemonName) {
         viewModel.getPokemonData(pokemonName)
     }
-    LaunchedEffect(pokemonDescription) {
-        Log.d("Header", "Pokemon Description: $pokemonDescription")
+    LaunchedEffect(pokemonDetailData) {
+        Log.d("pokemonDetailData", "Pokemon Description: $pokemonDetailData")
     }
-    LaunchedEffect(pokemonEvolution) {
-        Log.d("pokemonEvolution", "Pokemon Description: $pokemonEvolution")
+    LaunchedEffect(pokemonDetailData.pokemonEvolution) {
+        Log.d("pokemonEvolution", "Pokemon Description: $pokemonDetailData?.pokemonEvolution")
     }
 
     Column(
@@ -155,37 +173,51 @@ fun Header(modifier: Modifier = Modifier,  pokemonName: Int, viewModel: HomeView
                     .padding(top = 145.dp),
                 contentAlignment = Alignment.Center
             ) {
-                SubcomposeAsyncImage(
-                    model = image,
-                    contentDescription = "bulbasaur 1",
-                    modifier = Modifier
-                        .requiredWidth(width = 162.dp)
-                        .requiredHeight(height = 175.dp)
-                )
+                with(sharedTransitionScope) {
+                    SubcomposeAsyncImage(
+                        model = image,
+                        contentDescription = "bulbasaur 1",
+                        modifier = Modifier
+                            .requiredWidth(width = 162.dp)
+                            .requiredHeight(height = 175.dp)
+                            .sharedElement(
+                                sharedTransitionScope.rememberSharedContentState(key = "image-$image"),
+                                animatedVisibilityScope = animatedContentScope,
+                                boundsTransform = { _, _ ->
+                                    spring(dampingRatio = 0.8f, stiffness = 380f)
+                                }
+                            )
+                    )
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(10.dp))
-
-        pokemonDetails?.types?.let {
-            pokemonWeekNess?.let { weeknessType ->
-                genderRate?.let { genderRate ->
-                    pokemonDescription?.let { it1 ->
+        if(loading){
+            Spacer(modifier = Modifier.height(200.dp))
+            CircularProgressIndicator(modifier.align(Alignment.CenterHorizontally))
+        }
+        else{
+            pokemonDetailData.pokemonDetails?.types?.let {
+                pokemonDetailData.pokemonWeekNess.let { weeknessType ->
+                    pokemonDetailData.genderRate?.let { genderRate ->
                         PokeBody(
-                            name = pokemonDetails!!.name,
+                            name = pokemonDetailData.pokemonDetails!!.name,
                             type = it.map { it.type.name },
-                            details = it1,
+                            details = pokemonDetailData.pokemonDescription,
                             weekType = weeknessType,
-                            pokemon = pokemonDetails!!,
+                            pokemon = pokemonDetailData.pokemonDetails!!,
                             genderRate = genderRate.gender_rate
                         )
-                    }
                     }
                 }
             }
 
+        }
+
+
         if (firstType != null) {
-            pokemonEvolution?.let { EvolutionTab(pokemonEvolution = it,type = firstType,pokemonName =pokemonName) }
+            pokemonDetailData.pokemonEvolution?.let { EvolutionTab(pokemonEvolution = it,type = firstType,pokemonName =pokemonName) }
         }
         }
     }
@@ -241,13 +273,6 @@ fun PokeBody(name: String, type: List<String>, details: String = "",weekType:Lis
 
         }
         Spacer(modifier = Modifier.height(10.dp))
-//        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween)
-//        {
-//            PokemonDetailsHW(text = "CATEGORY", value = category)
-//            PokemonDetailsHW(text = "ABILITY", value = ability)
-//
-//        }
-//        Spacer(modifier = Modifier.height(20.dp))
         Text(text = "Gender", modifier = Modifier.fillMaxWidth()
             ,fontSize = 12.sp, textAlign = TextAlign.Center
             ,color =Color.Black.copy(alpha = 0.8f))
@@ -269,7 +294,7 @@ fun PokeBody(name: String, type: List<String>, details: String = "",weekType:Lis
             ,fontSize = 18.sp, textAlign = TextAlign.Start, fontWeight = FontWeight.Bold
             ,color =Color.Black.copy(alpha = 0.8f))
         Spacer(modifier = Modifier.height(5.dp))
-        LazyVerticalGrid(modifier = Modifier.fillMaxSize(), columns = GridCells.Fixed(2),){
+        LazyVerticalGrid(modifier = Modifier.fillMaxSize(), columns = GridCells.Fixed(2)){
 
             items(itemsToShow) {
                 PokemonTypeView(type = weekType[it], modifier = Modifier
@@ -330,156 +355,3 @@ fun GenderProgressBar(genderRate: Int) {
         )
     }
 }
-
-
-
-
-
-
-@Composable
-fun PokemonDetailsHW(modifier: Modifier = Modifier, text: String = "", value: String= "",type: String = "") {
-    val icon = getIconDescibe(text)
-    Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
-        modifier = modifier
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = icon),
-                contentDescription = "la:weight-hanging",
-                colorFilter = ColorFilter.tint(Color.Black.copy(alpha = 0.6f)),
-                modifier = Modifier
-                    .requiredSize(size = 16.dp)
-            )
-            Text(
-                text = text,
-                color = Color.Black.copy(alpha = 0.6f),
-                style = TextStyle(
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            )
-        }
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .requiredWidth(width = 154.dp)
-                .clip(shape = RoundedCornerShape(15.dp))
-                .border(
-                    border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.1f)),
-                    shape = RoundedCornerShape(15.dp)
-                )
-                .padding(all = 8.dp)
-        ) {
-            Text(
-                text = value,
-                color = Color.Black.copy(alpha = 0.9f),
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            )
-        }
-    }
-}
-
-@Composable
-fun EvolutionTab(pokemonEvolution: EvolutionChainResponse, type: String, pokemonName: Int){
-   val noOFEvolution = countTotalEvolutions(pokemonEvolution.chain)
-
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .height(417.dp)
-        .background(Color.White)
-        , verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "Evolution",fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        OutlinedCard(modifier = Modifier
-            .height(382.dp)
-            .fillMaxWidth()
-            .padding(10.dp)
-            .background(Color.White)
-            ,border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.1f))) {
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-            , verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-
-              Box(modifier = Modifier
-                  .fillMaxWidth()
-                  .height(76.dp), contentAlignment = Alignment.Center){
-                  CardEvoluo(Modifier,name = pokemonEvolution.chain.species.name
-                      ,image = pokemonEvolution.chain.species.url,
-                      type = type)
-                  }
-
-
-                if(noOFEvolution >0){
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(30.dp), contentAlignment = Alignment.Center){
-
-                        Row {
-                            Image(painter = painterResource(id = R.drawable.icon_evolution_down), contentDescription = "next")
-                            Text(text = "Level ${pokemonEvolution.chain.evolves_to[0].evolution_details[0].min_level}", color = Color(0xff173EA5), fontSize = 12.sp)
-                        }
-
-                    }
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(76.dp),
-                        contentAlignment = Alignment.Center
-                        ){
-                        CardEvoluo(Modifier,name = pokemonEvolution.chain.evolves_to[0].species.name
-                            ,image = pokemonEvolution.chain.evolves_to[0].species.url,
-                            type = type)
-                    }
-                }
-
-                if (noOFEvolution >1){
-
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(30.dp), contentAlignment = Alignment.Center){
-
-                        Row {
-                            Image(painter = painterResource(id = R.drawable.icon_evolution_down), contentDescription = "next")
-                            Text(text = "Level ${pokemonEvolution.chain.evolves_to[0].evolves_to[0].evolution_details[0].min_level}", color = Color(0xff173EA5), fontSize = 12.sp)
-                        }
-
-                    }
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(76.dp),
-                        contentAlignment = Alignment.Center
-
-                    ){
-                        CardEvoluo(Modifier,name =  pokemonEvolution.chain.evolves_to[0].evolves_to[0].species.name,
-                            image = pokemonEvolution.chain.evolves_to[0].evolves_to[0].species.url,
-                            type = type)
-                    }
-
-                }
-
-            }
-
-        }
-
-    }
-
-}
-
-
-@Serializable
-data class Header(
-    val pokemonName: Int,
-    val image: String
-
-)

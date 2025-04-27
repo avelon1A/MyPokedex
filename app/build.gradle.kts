@@ -138,5 +138,6 @@ dependencies {
     implementation("androidx.compose.ui:ui-text-google-fonts:1.3.2")
     implementation ("androidx.room:room-paging:2.5.0")
     implementation ("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
+    implementation ("androidx.work:work-runtime-ktx:2.9.0")
 
 }

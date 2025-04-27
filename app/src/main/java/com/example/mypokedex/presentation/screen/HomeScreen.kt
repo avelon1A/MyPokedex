@@ -1,6 +1,8 @@
 package com.example.mypokedex.presentation.screen
 
-import android.util.Log
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,7 +18,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,24 +28,22 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.mypokedex.presentation.common.PokemonCardNew
+import com.example.mypokedex.presentation.navigation.Screen
 import com.example.mypokedex.presentation.viewModels.HomeViewModel
 import com.example.mypokedex.util.extractPokemonNumberFromUrl
-import kotlinx.serialization.Serializable
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
+fun HomeScreen(
+    navController: NavController,
+    viewModel: HomeViewModel,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope
+) {
 
-//    val pokemonList = viewModel.pokemonList.collectAsLazyPagingItems()
     val pokemonList1 = viewModel.pokemonList1.collectAsLazyPagingItems()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-//    Log.d("HomeScreen", "Pokemon List: $pokemonList")
-//    LaunchedEffect(pokemonList.itemCount) {
-//        Log.d("HomeScreen", "Pokemon List Size: ${pokemonList.itemCount}")
-//        pokemonList.itemSnapshotList.forEach { item ->
-//            Log.d("HomeScreen", "Pokemon Item: $item")
-//        }
-//    }
+
 
     Scaffold(
         modifier = Modifier
@@ -99,14 +98,16 @@ fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
                             image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonNumber}.png",
                             onClick = {
                                 navController.navigate(
-                                    Header(
-                                    pokemonName = pokemonNumber!!,
-                                    image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonNumber}.png"
-                                )
+                                    Screen.Header(
+                                        pokemonName = pokemonNumber!!,
+                                        image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonNumber}.png"
+                                    )
                                 )
 
-                            }
-                            , type = pokemon.types
+                            }, type = pokemon.types,
+                            modifier = Modifier,
+                            sharedTransitionScope =sharedTransitionScope,
+                            animatedContentScope = animatedContentScope,
                         )
                     }
                 }
@@ -116,8 +117,3 @@ fun HomeScreen(navController : NavController, viewModel: HomeViewModel) {
         }
     )
 }
-
-
-
-@Serializable
-object HomeScreen
