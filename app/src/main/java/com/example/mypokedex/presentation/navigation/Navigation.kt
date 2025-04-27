@@ -23,7 +23,7 @@ import org.koin.androidx.compose.koinViewModel
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    startDestination: Any
+    startDestination: Screen.OnBoardingScreen
 ) {
     SharedTransitionLayout {
         NavHost(
@@ -33,20 +33,22 @@ fun AppNavHost(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            composable<HomeScreen> {
+            composable<Screen.HomeScreen> {
             val viewModel: HomeViewModel = koinViewModel()
-                HomeScreen(navController = navController,viewModel = viewModel)
+                HomeScreen(navController = navController,viewModel = viewModel,this@SharedTransitionLayout, this@composable)
             }
 
-            composable<OnBoardingScreen> {
+            composable<Screen.OnBoardingScreen> {
                 val viewModel: OnBoardingViewModel = koinViewModel()
                 OnBoardingScreen(navController = navController,event = viewModel::OnEvent)
 
             }
-            composable<Header> {
+            composable<Screen.Header> {
                 val viewModel: HomeViewModel = koinViewModel()
-                val pokemonDetails = it.toRoute<Header>()
-                Header( viewModel = viewModel, pokemonName = pokemonDetails.pokemonName, image = pokemonDetails.image)
+                val pokemonDetails = it.toRoute<Screen.Header>()
+                Header( viewModel = viewModel, pokemonName = pokemonDetails.pokemonName, image = pokemonDetails.image,
+                   sharedTransitionScope = this@SharedTransitionLayout,
+                   animatedContentScope =  this@composable)
 
             }
 

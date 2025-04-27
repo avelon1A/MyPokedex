@@ -36,11 +36,7 @@ interface PokemonRepository {
      *
      * @return A [Flow] emitting [PagingData] of [PokemonEntity].
      */
-    fun getPokemonFromDb(): Flow<PagingData<PokemonEntity>>
 
-    /**
-     * Clears the cached Pokémon data from the local database.
-     */
     suspend fun clearCachedPokemon()
 
     /**

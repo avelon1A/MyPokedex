@@ -1,5 +1,10 @@
 package com.example.mypokedex.presentation.common
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -40,10 +46,12 @@ import coil.compose.SubcomposeAsyncImage
 import com.example.mypokedex.R
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun PokemonCardNew(modifier: Modifier = Modifier, image:String, pokemonName: String, onClick: () -> Unit,type:List<String>) {
-    val context = LocalContext.current
-    val imageLoader = remember { ImageLoader.Builder(context).build() }
+fun PokemonCardNew(modifier: Modifier = Modifier, image:String, pokemonName: String, onClick: () -> Unit,type:List<String>,
+                   sharedTransitionScope: SharedTransitionScope,
+                   animatedContentScope: AnimatedContentScope
+) {
     val dominantColor = remember { mutableStateOf(Color.Transparent) }
     val dominantColortwo = remember { mutableStateOf(Color.Transparent) }
     val pokemonBackgroundImage = getPokemonBackground(type[0])
@@ -106,7 +114,7 @@ fun PokemonCardNew(modifier: Modifier = Modifier, image:String, pokemonName: Str
                         x = 0.dp,
                         y = 0.dp
                     )
-                ,image = image,)
+                ,image = image,sharedTransitionScope,animatedContentScope)
         }
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
@@ -149,20 +157,30 @@ fun PokemonCardNew(modifier: Modifier = Modifier, image:String, pokemonName: Str
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun Property1Bulbasaur(modifier: Modifier = Modifier, image: String) {
+fun Property1Bulbasaur(modifier: Modifier = Modifier,
+                       image: String,
+                       sharedTransitionScope: SharedTransitionScope,
+                       animatedVisibilityScope: AnimatedVisibilityScope,) {
     Box(
         modifier = modifier
-            .requiredSize(size = 94.dp)
-            .padding(16.dp)
-    ) {
-        SubcomposeAsyncImage(
-            contentDescription = "image 124",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(),
-            model =  image,
+            .requiredSize(size = 84.dp)
+            .padding(20.dp)
+    )
+    with(sharedTransitionScope) {
+        SubcomposeAsyncImage(modifier = Modifier
+            .sharedElement(state = rememberSharedContentState(key = "image-$image"),
+                animatedVisibilityScope = animatedVisibilityScope,
+                boundsTransform = { initial, target ->
+                    spring(dampingRatio = 0.8f, stiffness = 380f)
 
-            )
+                }
+            ),
+
+            contentDescription = "pokemonImage",
+            contentScale = ContentScale.Fit,
+            model =  image)
     }
 }
 

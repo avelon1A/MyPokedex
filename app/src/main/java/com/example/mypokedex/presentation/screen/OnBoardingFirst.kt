@@ -39,9 +39,9 @@ import com.bosch.composewithkotlin20.presentaion.ui.viewModel.event.OnBoardingEv
 import com.example.mypokedex.R
 import com.example.mypokedex.data.model.Page
 import com.example.mypokedex.data.model.pages
+import com.example.mypokedex.presentation.navigation.Screen
 import com.example.mypokedex.presentation.ui.theme.Blue
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 
 @Composable
 fun OnBoardingScreen(
@@ -137,7 +137,7 @@ fun OnBoardingScreen(
                 Row(
                     modifier = Modifier
                         .clickable {
-                            navController.navigate(HomeScreen)
+                            navController.navigate(Screen.HomeScreen)
                             event(OnBoardingEvent.SaveAtEntryPoint)
                         }
                         .padding(8.dp)
@@ -249,6 +249,3 @@ fun PageIndicator(
     }
 
 }
-
-@Serializable
-object OnBoardingScreen

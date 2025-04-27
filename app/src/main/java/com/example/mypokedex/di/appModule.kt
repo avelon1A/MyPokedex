@@ -41,13 +41,14 @@ val appModule = module {
             androidContext(),
             AppDatabase::class.java,
             "pokemon_database"
-        ).build()
+        ).fallbackToDestructiveMigration()
+            .build()
     }
 
     single {
         get<AppDatabase>().pokemonDao()
     }
-    viewModel { HomeViewModel(get())}
+    viewModel { HomeViewModel(get(),get(),get())}
     viewModel { OnBoardingViewModel(get()) }
 
 }

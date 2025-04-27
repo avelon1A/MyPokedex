@@ -1,11 +1,10 @@
 package com.example.mypokedex.presentation.viewModels
 
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.mypokedex.data.api.ApiService
-import com.example.mypokedex.data.localDataBase.PokemonEntity
-import com.example.mypokedex.data.model.response.PokemonDetails
 import com.example.mypokedex.data.model.response.ResultPokemon
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,17 +14,18 @@ class PokemonPagingSource(
 ) : PagingSource<Int, ResultPokemon>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ResultPokemon> {
-        val position = params.key ?: 0
+        Log.d("PokemonPagingSource", "load called with key: ${params.key}")
         return try {
-            val response = apiService.getPokemonList(
-                limit = params.loadSize,
-                offset = position
-            )
+            val offset = params.key ?: 0
+            val limit = params.loadSize
 
-            val pokemons = response.results
+            val response = apiService.getPokemonList(limit, offset)
+            Log.d("PokemonPagingSource", "Response: $response")
+            val pokemonList = response.results
+            Log.d("PokemonPagingSource", "pokemonList: ${response.results}")
 
             val pokemonEntities = withContext(Dispatchers.IO) {
-                pokemons.map { pokemon ->
+                pokemonList.map { pokemon ->
                     val details = apiService.getPokemonData(pokemon.name)
                     ResultPokemon(
                         name = pokemon.name,
@@ -34,11 +34,10 @@ class PokemonPagingSource(
                     )
                 }
             }
-
             LoadResult.Page(
                 data = pokemonEntities,
-                prevKey = if (position == 0) null else position - params.loadSize,
-                nextKey = if (pokemons.isEmpty()) null else position + params.loadSize
+                prevKey = if (offset == 0) null else offset - limit,
+                nextKey = if (pokemonList.isEmpty()) null else offset + limit
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
@@ -46,7 +45,9 @@ class PokemonPagingSource(
     }
 
     override fun getRefreshKey(state: PagingState<Int, ResultPokemon>): Int? {
-        return state.anchorPosition?.let { state.closestPageToPosition(it)?.prevKey?.plus(1) }
+        return state.anchorPosition?.let { anchorPosition ->
+            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(state.config.pageSize)
+                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(state.config.pageSize)
+        }
     }
 }
-
