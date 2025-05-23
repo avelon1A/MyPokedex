@@ -130,14 +130,16 @@ fun OnBoardingScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(16.dp,top =30.dp),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.Top
             ) {
                 Row(
                     modifier = Modifier
                         .clickable {
-                            navController.navigate(Screen.HomeScreen)
+                            navController.navigate(Screen.HomeScreen){
+                                popUpTo(0) { inclusive = true }
+                            }
                             event(OnBoardingEvent.SaveAtEntryPoint)
                         }
                         .padding(8.dp)

@@ -14,6 +14,7 @@ import androidx.navigation.toRoute
 import com.example.mypokedex.presentation.screen.Header
 import com.example.mypokedex.presentation.screen.HomeScreen
 import com.example.mypokedex.presentation.screen.OnBoardingScreen
+import com.example.mypokedex.presentation.screen.SplashScreen
 import com.example.mypokedex.presentation.viewModels.HomeViewModel
 import com.example.mypokedex.presentation.viewModels.OnBoardingViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -23,7 +24,7 @@ import org.koin.androidx.compose.koinViewModel
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    startDestination: Screen.OnBoardingScreen
+    startDestination: Screen
 ) {
     SharedTransitionLayout {
         NavHost(
@@ -33,6 +34,9 @@ fun AppNavHost(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
+            composable<Screen.SplashScreen> {
+                SplashScreen(navController = navController)
+            }
             composable<Screen.HomeScreen> {
             val viewModel: HomeViewModel = koinViewModel()
                 HomeScreen(navController = navController,viewModel = viewModel,this@SharedTransitionLayout, this@composable)

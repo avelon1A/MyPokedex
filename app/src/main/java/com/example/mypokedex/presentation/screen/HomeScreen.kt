@@ -58,7 +58,7 @@ fun HomeScreen(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.surfaceBright
+                        color = MaterialTheme.colorScheme.primary
                     )
                 },
                 navigationIcon = {},
@@ -69,6 +69,7 @@ fun HomeScreen(
                 )
             )
         },
+
         content = { innerPadding ->
             if(pokemonList1.itemCount == 0){
                 Column(modifier = Modifier.fillMaxSize(),

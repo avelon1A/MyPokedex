@@ -35,6 +35,7 @@ class MainActivity : ComponentActivity() {
             setKeepOnScreenCondition {
                false
             }
+            enableEdgeToEdge()
         }
         setContent {
             val navController = rememberNavController()
@@ -42,7 +43,7 @@ class MainActivity : ComponentActivity() {
                 AppNavHost(
                     navController = navController,
                     modifier = Modifier.padding(),
-                    startDestination = Screen.OnBoardingScreen
+                    startDestination = Screen.SplashScreen
                 )
 
             }
