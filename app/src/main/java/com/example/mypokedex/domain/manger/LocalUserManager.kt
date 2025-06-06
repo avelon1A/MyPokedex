@@ -7,5 +7,7 @@ interface LocalUserManager {
 	fun readAppEntry(): Flow<Boolean>
 	suspend fun loginStatus()
 	fun readLoginStatus(): Flow<Boolean>
+	suspend fun setPokemonSyncDone()
+	fun isPokemonSyncDone(): Flow<Boolean>
 
 }

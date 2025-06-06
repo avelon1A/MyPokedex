@@ -25,7 +25,7 @@ fun SplashScreen(navController: NavHostController) {
         Image(modifier = Modifier.height(71.dp).width(192.dp), painter = painterResource(id = R.drawable.splach_icon), contentDescription = "splash_screen")
 
         LaunchedEffect(Unit) {
-            delay(2000)
+            delay(4000)
             navController.navigate(Screen.OnBoardingScreen)
         }
 

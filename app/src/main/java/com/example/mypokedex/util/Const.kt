@@ -6,4 +6,5 @@ object Const {
     const val USER_SETTING = "user_setting"
     const val APP_ENTRY = "app_entry"
     const val LOGING_STATUS = "login_status"
+    val POKEMON_SYNC_DONE ="pokemon_sync_done"
 }

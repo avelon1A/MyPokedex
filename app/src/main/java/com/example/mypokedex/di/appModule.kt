@@ -1,7 +1,7 @@
 package com.example.mypokedex.di
 
 import androidx.room.Room
-import com.bosch.composewithkotlin20.data.manager.LocalUserMangerImp
+import com.example.mypokedex.data.manager.LocalUserMangerImp
 import com.example.mypokedex.domain.usecases.LoginStatus
 import com.example.mypokedex.data.api.ApiService
 import com.example.mypokedex.data.localDataBase.AppDatabase

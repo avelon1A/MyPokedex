@@ -1,4 +1,4 @@
-package com.bosch.composewithkotlin20.data.manager
+package com.example.mypokedex.data.manager
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -38,9 +38,24 @@ class LocalUserMangerImp(private val context: Context): LocalUserManager {
 			preferences[PrefrencesKeys.LOGING_STATUS]?: false
 		}
 	}
+
+	override suspend fun setPokemonSyncDone() {
+		context.dataStore.edit { settings ->
+			settings[PrefrencesKeys.POKEMON_SYNC_DONE] = true
+		}
+	}
+
+	override fun isPokemonSyncDone(): Flow<Boolean> {
+		return context.dataStore.data.map { preferences ->
+			preferences[PrefrencesKeys.POKEMON_SYNC_DONE] ?: false
+		}
+	}
+
 }
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_SETTING)
 private object PrefrencesKeys {
 	val APP_ENTRY = booleanPreferencesKey(name = Const.APP_ENTRY)
 	val LOGING_STATUS = booleanPreferencesKey(name = Const.LOGING_STATUS)
+	val POKEMON_SYNC_DONE = booleanPreferencesKey(name = Const.POKEMON_SYNC_DONE)
+
 }

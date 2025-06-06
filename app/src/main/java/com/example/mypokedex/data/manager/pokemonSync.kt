@@ -4,20 +4,20 @@ import android.util.Log
 import androidx.room.withTransaction
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.mypokedex.MyApp
 import com.example.mypokedex.data.api.ApiService
 import com.example.mypokedex.data.localDataBase.AppDatabase
 import com.example.mypokedex.data.localDataBase.PokemonEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.koin.java.KoinJavaComponent.inject
+
 
 class PokemonSyncWorker(
     context: Context,
     workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
-    private val apiService: ApiService by lazy { (context.applicationContext as MyApp).apiService }
-    private val database: AppDatabase by lazy { (context.applicationContext as MyApp).database }
-
+    val apiService: ApiService by inject(ApiService::class.java)
+    val database: AppDatabase by inject(AppDatabase::class.java)
     override suspend fun doWork(): Result {
         return try {
             val pageSize = 20
