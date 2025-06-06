@@ -27,10 +27,7 @@ import com.example.mypokedex.presentation.ui.theme.MyPokedexTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WorkManager.getInstance(applicationContext).enqueue(
-            OneTimeWorkRequestBuilder<PokemonSyncWorker>()
-                .build()
-        )
+
         installSplashScreen().apply {
             setKeepOnScreenCondition {
                false
