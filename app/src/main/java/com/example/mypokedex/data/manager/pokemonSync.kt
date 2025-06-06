@@ -21,14 +21,14 @@ class PokemonSyncWorker(
     override suspend fun doWork(): Result {
         return try {
             val pageSize = 20
-            var totalPokemons = 1000
+            var totalPokemon = 1000
 
             database.pokemonDao().clearAll();
 
-            for (offset in 0 until totalPokemons step pageSize) {
+            for (offset in 0 until totalPokemon step pageSize) {
                 val response = apiService.getPokemonList(limit = pageSize, offset = offset)
                 val pokemonList = response.results
-                totalPokemons = response.count
+                totalPokemon = response.count
 
                 val pokemonEntities = withContext(Dispatchers.IO) {
                     pokemonList.map { pokemon ->

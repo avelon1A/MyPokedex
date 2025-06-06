@@ -15,8 +15,6 @@ import org.koin.core.logger.Level
 
 class MyApp : Application(), Configuration.Provider {
 
-    val apiService: ApiService by inject()
-    val database: AppDatabase by inject()
     override fun onCreate() {
         super.onCreate()
 
@@ -29,6 +27,6 @@ class MyApp : Application(), Configuration.Provider {
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
-            .setWorkerFactory(PokemonWorkerFactory(apiService, database))
+            .setWorkerFactory(PokemonWorkerFactory())
             .build()
 }

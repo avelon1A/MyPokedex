@@ -4,14 +4,9 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
-import com.example.mypokedex.data.api.ApiService
-import com.example.mypokedex.data.localDataBase.AppDatabase
 import com.example.mypokedex.data.manager.PokemonSyncWorker
 
-class PokemonWorkerFactory(
-    private val apiService: ApiService,
-    private val database: AppDatabase
-) : WorkerFactory() {
+class PokemonWorkerFactory() : WorkerFactory() {
 
     override fun createWorker(
         appContext: Context,

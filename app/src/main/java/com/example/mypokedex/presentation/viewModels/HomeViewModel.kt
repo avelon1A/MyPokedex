@@ -9,7 +9,6 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.mypokedex.data.api.ApiService
 import com.example.mypokedex.data.localDataBase.AppDatabase
-import com.example.mypokedex.data.localDataBase.PokemonRemoteMediator
 import com.example.mypokedex.data.model.PokemonDetailData
 import com.example.mypokedex.data.model.response.DamageRelations
 import com.example.mypokedex.data.model.response.EvolutionChainResponse
