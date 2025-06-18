@@ -1,6 +1,7 @@
 package com.example.mypokedex.presentation.screen
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -44,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -61,6 +63,7 @@ import com.example.mypokedex.presentation.common.getIconDescibe
 import com.example.mypokedex.presentation.common.getPokemonBackground
 import com.example.mypokedex.presentation.common.getTypeColor
 import com.example.mypokedex.presentation.viewModels.HomeViewModel
+import com.example.mypokedex.presentation.viewModels.UiEvent
 import com.example.mypokedex.presentation.viewModels.UiState
 import com.example.mypokedex.util.getGender
 import com.example.mypokedex.util.getGenderPrecentageMale
@@ -76,6 +79,7 @@ fun Header(modifier: Modifier = Modifier, pokemonName: Int, viewModel: HomeViewM
     val pokemonDetail by viewModel.pokemonDetailData.collectAsState()
     var pokemonDetailData by remember { mutableStateOf(PokemonDetailData()) }
     var loading by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     when(pokemonDetail){
         is UiState.Error -> {
             val errorMessage = (pokemonDetail as? UiState.Error)?.message ?: "An unexpected error occurred"
@@ -97,11 +101,16 @@ fun Header(modifier: Modifier = Modifier, pokemonName: Int, viewModel: HomeViewM
     LaunchedEffect(pokemonName) {
         viewModel.getPokemonData(pokemonName)
     }
-    LaunchedEffect(pokemonDetailData) {
-        Log.d("pokemonDetailData", "Pokemon Description: $pokemonDetailData")
-    }
-    LaunchedEffect(pokemonDetailData.pokemonEvolution) {
-        Log.d("pokemonEvolution", "Pokemon Description: $pokemonDetailData?.pokemonEvolution")
+
+
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is UiEvent.ShowToast -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     Column(

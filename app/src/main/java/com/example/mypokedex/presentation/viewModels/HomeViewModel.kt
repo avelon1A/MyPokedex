@@ -15,9 +15,11 @@ import com.example.mypokedex.data.model.response.EvolutionChainResponse
 import com.example.mypokedex.data.model.response.PokemonSpeciesResponse
 import com.example.mypokedex.domain.repo.PokemonRepository
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
@@ -31,23 +33,22 @@ class HomeViewModel(
     @OptIn(ExperimentalPagingApi::class)
     val pokemonList1 = Pager(
         config = PagingConfig(
-            pageSize = 100,
-            enablePlaceholders = false
-        ),
-        pagingSourceFactory = {
+            pageSize = 100, enablePlaceholders = false
+        ), pagingSourceFactory = {
             database.pokemonDao().getAllPokemon()
-        }
-    ).flow
-        .cachedIn(viewModelScope)
-        .stateIn(
+        }).flow.cachedIn(viewModelScope).stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
             initialValue = PagingData.empty()
         )
 
 
-private val _pokemonDetailData = MutableStateFlow<UiState<PokemonDetailData>>(UiState.Loading)
+    private val _pokemonDetailData = MutableStateFlow<UiState<PokemonDetailData>>(UiState.Loading)
     val pokemonDetailData = _pokemonDetailData.asStateFlow()
+
+    private val _eventChannel = Channel<UiEvent>(Channel.BUFFERED)
+    val eventFlow = _eventChannel.receiveAsFlow()
+
 
     fun getPokemonData(pokemonName: Int) {
         viewModelScope.launch {
@@ -56,7 +57,8 @@ private val _pokemonDetailData = MutableStateFlow<UiState<PokemonDetailData>>(Ui
             try {
                 val pokemonDetails = pokemonRepository.getPokemonDetails(pokemonName)
 
-                val detailData = fetchPokemonExtrasSafely(pokemonDetails.name, pokemonDetails.types[0].type.name)
+                val detailData =
+                    fetchPokemonExtrasSafely(pokemonDetails.name, pokemonDetails.types[0].type.name)
 
                 val pokemonDetailData = PokemonDetailData(
                     pokemonDetails = pokemonDetails,
@@ -77,8 +79,7 @@ private val _pokemonDetailData = MutableStateFlow<UiState<PokemonDetailData>>(Ui
     }
 
     private suspend fun fetchPokemonExtrasSafely(
-        pokemonName: String,
-        typeName: String
+        pokemonName: String, typeName: String
     ): PokemonExtras = supervisorScope {
 
         val weaknessDeferred = async {
@@ -86,12 +87,18 @@ private val _pokemonDetailData = MutableStateFlow<UiState<PokemonDetailData>>(Ui
                 val data = pokemonRepository.getPokemonWeekness(typeName)
                 extractTypeNames(data.damage_relations)
             } catch (e: Exception) {
+                _eventChannel.send(UiEvent.ShowToast("Failed to load weakness data"))
                 emptyList()
             }
         }
 
         val genderDeferred = async {
-            pokemonRepository.getPokemonGenderRate(pokemonName)
+            try {
+                pokemonRepository.getPokemonGenderRate(pokemonName)
+            } catch (e: Exception) {
+                _eventChannel.send(UiEvent.ShowToast("Failed to load gender rate"))
+                throw e
+            }
         }
 
         val descriptionDeferred = async {
@@ -99,6 +106,7 @@ private val _pokemonDetailData = MutableStateFlow<UiState<PokemonDetailData>>(Ui
                 val data = pokemonRepository.getPokemonDetailsText(pokemonName)
                 data.flavor_text_entries.firstOrNull()?.flavor_text.orEmpty()
             } catch (e: Exception) {
+                _eventChannel.send(UiEvent.ShowToast("Failed to load description"))
                 ""
             }
         }
@@ -107,7 +115,8 @@ private val _pokemonDetailData = MutableStateFlow<UiState<PokemonDetailData>>(Ui
         val evolutionChain = try {
             val evolutionId = extractIdFromUrl(genderData.evolution_chain.url)
             evolutionId?.let { pokemonRepository.getEvolutionChain(it) }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            _eventChannel.send(UiEvent.ShowToast("Failed to load evolution chain"))
             null
         }
 
@@ -118,6 +127,7 @@ private val _pokemonDetailData = MutableStateFlow<UiState<PokemonDetailData>>(Ui
             evolutionChain = evolutionChain
         )
     }
+
 
 
     private fun extractTypeNames(damageRelations: DamageRelations): List<String> {
@@ -131,6 +141,10 @@ private val _pokemonDetailData = MutableStateFlow<UiState<PokemonDetailData>>(Ui
     private fun extractIdFromUrl(url: String): Int? {
         return url.trimEnd('/').split("/").lastOrNull()?.toIntOrNull()
     }
+}
+
+sealed class UiEvent {
+    data class ShowToast(val message: String) : UiEvent()
 }
 
 data class PokemonExtras(
