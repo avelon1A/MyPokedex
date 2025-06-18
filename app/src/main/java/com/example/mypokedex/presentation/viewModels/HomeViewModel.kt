@@ -12,6 +12,7 @@ import com.example.mypokedex.data.localDataBase.AppDatabase
 import com.example.mypokedex.data.model.PokemonDetailData
 import com.example.mypokedex.data.model.response.DamageRelations
 import com.example.mypokedex.data.model.response.EvolutionChainResponse
+import com.example.mypokedex.data.model.response.PokemonSpeciesResponse
 import com.example.mypokedex.domain.repo.PokemonRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 
 class HomeViewModel(
     private val pokemonRepository: PokemonRepository,
@@ -50,34 +52,19 @@ private val _pokemonDetailData = MutableStateFlow<UiState<PokemonDetailData>>(Ui
     fun getPokemonData(pokemonName: Int) {
         viewModelScope.launch {
             _pokemonDetailData.value = UiState.Loading
+
             try {
                 val pokemonDetails = pokemonRepository.getPokemonDetails(pokemonName)
 
-
-                val weaknessDeferred = async { pokemonRepository.getPokemonWeekness(pokemonDetails.types[0].type.name) }
-                val genderDeferred = async { pokemonRepository.getPokemonGenderRate(pokemonDetails.name) }
-                val descriptionDeferred = async { pokemonRepository.getPokemonDetailsText(pokemonDetails.name) }
-
-                val weaknessData = weaknessDeferred.await()
-                val genderData = genderDeferred.await()
-                val descriptionData = descriptionDeferred.await()
-
-                val weaknessList = extractTypeNames(weaknessData.damage_relations)
-                val descriptionText = descriptionData.flavor_text_entries.firstOrNull()?.flavor_text.orEmpty()
-
-                var evolutionChain: EvolutionChainResponse? = null
-                val evolutionChainId = extractIdFromUrl(genderData.evolution_chain.url)
-                if (evolutionChainId != null) {
-                    evolutionChain = pokemonRepository.getEvolutionChain(evolutionChainId)
-                }
+                val detailData = fetchPokemonExtrasSafely(pokemonDetails.name, pokemonDetails.types[0].type.name)
 
                 val pokemonDetailData = PokemonDetailData(
                     pokemonDetails = pokemonDetails,
-                    pokemonWeekNess = weaknessList,
-                    genderRate = genderData,
-                    pokemonDescription = descriptionText,
-                    pokemonEvolution = evolutionChain,
-                    pokemonSpeciesResponse = genderData
+                    pokemonWeekNess = detailData.weaknessList,
+                    genderRate = detailData.genderData,
+                    pokemonDescription = detailData.descriptionText,
+                    pokemonEvolution = detailData.evolutionChain,
+                    pokemonSpeciesResponse = detailData.genderData
                 )
 
                 _pokemonDetailData.value = UiState.Success(pokemonDetailData)
@@ -88,6 +75,50 @@ private val _pokemonDetailData = MutableStateFlow<UiState<PokemonDetailData>>(Ui
             }
         }
     }
+
+    private suspend fun fetchPokemonExtrasSafely(
+        pokemonName: String,
+        typeName: String
+    ): PokemonExtras = supervisorScope {
+
+        val weaknessDeferred = async {
+            try {
+                val data = pokemonRepository.getPokemonWeekness(typeName)
+                extractTypeNames(data.damage_relations)
+            } catch (e: Exception) {
+                emptyList()
+            }
+        }
+
+        val genderDeferred = async {
+            pokemonRepository.getPokemonGenderRate(pokemonName)
+        }
+
+        val descriptionDeferred = async {
+            try {
+                val data = pokemonRepository.getPokemonDetailsText(pokemonName)
+                data.flavor_text_entries.firstOrNull()?.flavor_text.orEmpty()
+            } catch (e: Exception) {
+                ""
+            }
+        }
+
+        val genderData = genderDeferred.await()
+        val evolutionChain = try {
+            val evolutionId = extractIdFromUrl(genderData.evolution_chain.url)
+            evolutionId?.let { pokemonRepository.getEvolutionChain(it) }
+        } catch (_: Exception) {
+            null
+        }
+
+        PokemonExtras(
+            weaknessList = weaknessDeferred.await(),
+            genderData = genderData,
+            descriptionText = descriptionDeferred.await(),
+            evolutionChain = evolutionChain
+        )
+    }
+
 
     private fun extractTypeNames(damageRelations: DamageRelations): List<String> {
         val typeNames = mutableListOf<String>()
@@ -101,6 +132,15 @@ private val _pokemonDetailData = MutableStateFlow<UiState<PokemonDetailData>>(Ui
         return url.trimEnd('/').split("/").lastOrNull()?.toIntOrNull()
     }
 }
+
+data class PokemonExtras(
+    val weaknessList: List<String>,
+    val genderData: PokemonSpeciesResponse,
+    val descriptionText: String,
+    val evolutionChain: EvolutionChainResponse?
+)
+
+
 sealed class UiState<out T> {
     object Loading : UiState<Nothing>()
     data class Success<T>(val data: T) : UiState<T>()
