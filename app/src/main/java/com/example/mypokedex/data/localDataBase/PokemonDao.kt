@@ -21,6 +21,9 @@ interface PokemonDao {
 
     @Query("DELETE FROM pokemonDB")
     suspend fun clearAll()
+
+@Query("SELECT * FROM pokemonDB WHERE name LIKE '%' || :name || '%'")
+suspend fun getPokemonByName(name: String): List<PokemonEntity>
 }
 
 @Database(entities = [PokemonEntity::class], version = 1)

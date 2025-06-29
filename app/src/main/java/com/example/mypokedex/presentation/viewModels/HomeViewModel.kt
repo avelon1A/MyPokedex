@@ -37,10 +37,10 @@ class HomeViewModel(
         ), pagingSourceFactory = {
             database.pokemonDao().getAllPokemon()
         }).flow.cachedIn(viewModelScope).stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Lazily,
-            initialValue = PagingData.empty()
-        )
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = PagingData.empty()
+    )
 
 
     private val _pokemonDetailData = MutableStateFlow<UiState<PokemonDetailData>>(UiState.Loading)
@@ -57,7 +57,8 @@ class HomeViewModel(
             try {
                 val pokemonDetails = pokemonRepository.getPokemonDetails(pokemonName)
 
-                val detailData = fetchPokemonExtrasSafely(pokemonDetails.name, pokemonDetails.types[0].type.name)
+                val detailData =
+                    fetchPokemonExtrasSafely(pokemonDetails.name, pokemonDetails.types[0].type.name)
 
                 val pokemonDetailData = PokemonDetailData(
                     pokemonDetails = pokemonDetails,
@@ -77,7 +78,7 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun fetchPokemonExtrasSafely(
+    suspend fun fetchPokemonExtrasSafely(
         pokemonName: String, typeName: String
     ): PokemonExtras = supervisorScope {
 
@@ -126,7 +127,6 @@ class HomeViewModel(
             evolutionChain = evolutionChain
         )
     }
-
 
 
     private fun extractTypeNames(damageRelations: DamageRelations): List<String> {

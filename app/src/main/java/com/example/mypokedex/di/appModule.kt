@@ -15,6 +15,8 @@ import com.example.mypokedex.domain.usecases.SaveAppEntry
 import com.example.mypokedex.presentation.viewModels.HomeViewModel
 import com.example.mypokedex.presentation.viewModels.OnBoardingViewModel
 import com.example.mypokedex.presentation.viewModels.PokemonPagingSource
+import com.example.mypokedex.presentation.viewModels.SearchViewModel
+import com.example.mypokedex.presentation.viewModels.SplashScreenViewModel
 import com.example.mypokedex.util.Const.BASE_URL
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import org.koin.android.ext.koin.androidApplication
@@ -50,6 +52,8 @@ val appModule = module {
     }
     viewModel { HomeViewModel(get(),get(),get())}
     viewModel { OnBoardingViewModel(get()) }
+    viewModel { SearchViewModel(get()) }
+    viewModel { SplashScreenViewModel(get()) }
 
 }
 

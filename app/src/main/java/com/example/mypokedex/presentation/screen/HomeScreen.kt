@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.mypokedex.presentation.common.BottomNavigation
 import com.example.mypokedex.presentation.common.PokemonCardNew
 import com.example.mypokedex.presentation.navigation.Screen
 import com.example.mypokedex.presentation.viewModels.HomeViewModel
@@ -48,7 +50,7 @@ fun HomeScreen(
     Scaffold(
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-        containerColor= MaterialTheme.colorScheme.background,
+        containerColor = MaterialTheme.colorScheme.background,
 
         topBar = {
             LargeTopAppBar(
@@ -64,56 +66,86 @@ fun HomeScreen(
                 navigationIcon = {},
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor =  MaterialTheme.colorScheme.background,
-                            scrolledContainerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    scrolledContainerColor = MaterialTheme.colorScheme.background
                 )
             )
         },
 
         content = { innerPadding ->
-            if(pokemonList1.itemCount == 0){
-                Column(modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircularProgressIndicator(modifier = Modifier.size(20.dp)
-                        .padding(bottom = 100.dp).background(Color.Green),color = Color.Green)
 
-                }
-
-        }
-            else{
-            LazyColumn(
-                contentPadding = innerPadding,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(18.dp)
-            ) {
-                items(pokemonList1.itemCount) { pokemonIndex ->
-                    pokemonList1[pokemonIndex]?.let { pokemon ->
-                        val pokemonNumber = extractPokemonNumberFromUrl(pokemon.url)
-
-                        PokemonCardNew(
-                            pokemonName = pokemon.name,
-                            image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonNumber}.png",
-                            onClick = {
-                                navController.navigate(
-                                    Screen.Header(
-                                        pokemonName = pokemonNumber!!,
-                                        image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonNumber}.png"
-                                    )
-                                )
-
-                            }, type = pokemon.types,
-                            modifier = Modifier,
-                            sharedTransitionScope =sharedTransitionScope,
-                            animatedContentScope = animatedContentScope,
+            Box {
+                if (pokemonList1.itemCount == 0) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .padding(bottom = 100.dp)
+                                .background(Color.Green),
+                            color = Color.Green
                         )
+
+                    }
+
+                } else {
+                    Box {
+                        LazyColumn(
+                            contentPadding = innerPadding,
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(18.dp)
+                        ) {
+                            items(pokemonList1.itemCount) { pokemonIndex ->
+                                pokemonList1[pokemonIndex]?.let { pokemon ->
+                                    val pokemonNumber = extractPokemonNumberFromUrl(pokemon.url)
+
+                                    PokemonCardNew(
+                                        pokemonName = pokemon.name,
+                                        image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonNumber}.png",
+                                        onClick = {
+                                            navController.navigate(
+                                                Screen.Header(
+                                                    pokemonName = pokemonNumber!!,
+                                                    image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonNumber}.png"
+                                                )
+                                            )
+
+                                        },
+                                        type = pokemon.types,
+                                        modifier = Modifier,
+                                        sharedTransitionScope = sharedTransitionScope,
+                                        animatedContentScope = animatedContentScope,
+                                    )
+                                }
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 50.dp)
+                        ) {
+                            BottomNavigation(
+                                modifier = Modifier,
+                                selectedIndex = 0,
+                                onItemSelected = {
+                                    when (it) {
+                                        0 -> navController.navigate(Screen.HomeScreen)
+                                        1 -> navController.navigate(Screen.SearchScreen)
+                                    }
+                                })
+                        }
+
+
                     }
                 }
             }
-        }
 
         }
     )

@@ -47,7 +47,7 @@ class LocalUserMangerImp(private val context: Context): LocalUserManager {
 
 	override fun isPokemonSyncDone(): Flow<Boolean> {
 		return context.dataStore.data.map { preferences ->
-			preferences[PrefrencesKeys.POKEMON_SYNC_DONE] ?: false
+            preferences[PrefrencesKeys.POKEMON_SYNC_DONE] == true
 		}
 	}
 

@@ -46,6 +46,11 @@ interface ApiService {
    suspend fun getEvolutionChain(
         @Path("id") id: Int): Response<EvolutionChainResponse>
 
+    @GET("pokemon/{name}")
+    suspend fun getPokemonByName(
+        @Path("name") name: String
+    ): Pokemon
+
 
 
 }

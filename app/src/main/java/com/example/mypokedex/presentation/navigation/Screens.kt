@@ -15,4 +15,7 @@ sealed class Screen {
         val pokemonName: Int,
         val image: String
     ) : Screen()
+
+    @Serializable
+    data object SearchScreen : Screen()
 }

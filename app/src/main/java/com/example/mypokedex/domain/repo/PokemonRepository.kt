@@ -84,4 +84,10 @@ interface PokemonRepository {
      * @return An [EvolutionChainResponse] object or null if not found.
      */
     suspend fun getEvolutionChain(id: Int): EvolutionChainResponse?
+
+    /**
+     * Searches for a Pokémon by its name.
+     */
+    suspend fun getPokemonByName(name: String): List<PokemonEntity>
+
 }

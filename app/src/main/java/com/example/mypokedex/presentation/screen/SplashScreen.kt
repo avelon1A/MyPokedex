@@ -17,16 +17,22 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mypokedex.R
 import com.example.mypokedex.presentation.navigation.Screen
+import com.example.mypokedex.presentation.viewModels.SplashScreenViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavHostController) {
+fun SplashScreen(navController: NavHostController,viewModel: SplashScreenViewModel) {
     Box(modifier = Modifier.fillMaxSize().background(Color(0xFF000029)),contentAlignment = Alignment.Center ){
         Image(modifier = Modifier.height(71.dp).width(192.dp), painter = painterResource(id = R.drawable.splach_icon), contentDescription = "splash_screen")
 
         LaunchedEffect(Unit) {
             delay(4000)
-            navController.navigate(Screen.OnBoardingScreen)
+            if (viewModel.hasAppEntry.value) {
+                navController.navigate(Screen.HomeScreen)
+            }else{
+                navController.navigate(Screen.OnBoardingScreen)
+
+            }
         }
 
     }

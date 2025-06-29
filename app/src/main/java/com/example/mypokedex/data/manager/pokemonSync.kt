@@ -50,7 +50,9 @@ class PokemonSyncWorker(
             Result.success()
         } catch (e: Exception) {
             e.printStackTrace()
+            Log.e("PokemonSyncWorker", "Error during Pokemon sync: ${e.message}")
             Result.failure()
+
         }
     }
 }

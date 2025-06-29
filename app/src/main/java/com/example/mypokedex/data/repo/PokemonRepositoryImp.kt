@@ -13,6 +13,8 @@ import com.example.mypokedex.data.model.response.ResultPokemon
 import com.example.mypokedex.data.model.response.TypeResponse
 import com.example.mypokedex.domain.repo.PokemonRepository
 import com.example.mypokedex.presentation.viewModels.PokemonPagingSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class PokemonRepositoryImp(private val apiService: ApiService, private val pokemonDao: PokemonDao): PokemonRepository {
 
@@ -61,6 +63,10 @@ class PokemonRepositoryImp(private val apiService: ApiService, private val pokem
             }
     }
 
+    override suspend fun getPokemonByName(name: String): List<PokemonEntity> {
+        return pokemonDao.getPokemonByName(name)
+    }
+
     override suspend fun clearCachedPokemon() {
         pokemonDao.clearAll()
     }
@@ -70,4 +76,6 @@ class PokemonRepositoryImp(private val apiService: ApiService, private val pokem
     override fun getPokemonPagingSource(): PagingSource<Int, ResultPokemon> {
         return PokemonPagingSource(apiService)
     }
+
+
 }
