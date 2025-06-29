@@ -57,8 +57,7 @@ class HomeViewModel(
             try {
                 val pokemonDetails = pokemonRepository.getPokemonDetails(pokemonName)
 
-                val detailData =
-                    fetchPokemonExtrasSafely(pokemonDetails.name, pokemonDetails.types[0].type.name)
+                val detailData = fetchPokemonExtrasSafely(pokemonDetails.name, pokemonDetails.types[0].type.name)
 
                 val pokemonDetailData = PokemonDetailData(
                     pokemonDetails = pokemonDetails,
