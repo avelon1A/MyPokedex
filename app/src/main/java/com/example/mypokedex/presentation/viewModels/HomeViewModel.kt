@@ -1,5 +1,6 @@
 package com.example.mypokedex.presentation.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import kotlin.math.log
 
 class HomeViewModel(
     private val pokemonRepository: PokemonRepository,
@@ -126,6 +128,16 @@ class HomeViewModel(
             descriptionText = descriptionDeferred.await(),
             evolutionChain = evolutionChain
         )
+    }
+
+    fun updatefav(  isFav: Boolean,pokemonName: String,) {
+        viewModelScope.launch {
+            Log.d("HomeViewModel", "updatefav called with isFav: $isFav, pokemonName: $pokemonName")
+            try { pokemonRepository.updatePokemonfav(isFav, pokemonName)
+            } catch (e: Exception) {
+                _eventChannel.send(UiEvent.ShowToast("Failed to update favorite status"))
+            }
+        }
     }
 
 

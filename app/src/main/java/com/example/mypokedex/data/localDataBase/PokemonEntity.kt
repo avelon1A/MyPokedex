@@ -10,5 +10,6 @@ import androidx.room.TypeConverters
 data class PokemonEntity(
     @PrimaryKey val name: String,
     val url: String,
-    val types: List<String>
+    val types: List<String>,
+    val favorite: Boolean = false
 )

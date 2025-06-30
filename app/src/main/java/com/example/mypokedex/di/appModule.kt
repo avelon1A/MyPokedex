@@ -5,6 +5,7 @@ import com.example.mypokedex.data.manager.LocalUserMangerImp
 import com.example.mypokedex.domain.usecases.LoginStatus
 import com.example.mypokedex.data.api.ApiService
 import com.example.mypokedex.data.localDataBase.AppDatabase
+import com.example.mypokedex.data.localDataBase.MIGRATION_1_2
 import com.example.mypokedex.data.localDataBase.PokemonDao
 import com.example.mypokedex.data.repo.PokemonRepositoryImp
 import com.example.mypokedex.domain.manger.LocalUserManager
@@ -43,7 +44,8 @@ val appModule = module {
             androidContext(),
             AppDatabase::class.java,
             "pokemon_database"
-        ).fallbackToDestructiveMigration()
+        ).addMigrations(MIGRATION_1_2)
+            .fallbackToDestructiveMigration()
             .build()
     }
 

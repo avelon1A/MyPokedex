@@ -39,6 +39,7 @@ fun BottomNavigation(
     val items = listOf(
         bottomNav("Home", R.drawable.icon_home_active, R.drawable.icon_home_disable),
         bottomNav("Search", R.drawable.search, R.drawable.search),
+        bottomNav("favourite", R.drawable.icon_fav_active, R.drawable.icon_fav_disable),
 
         )
     Box(
@@ -83,7 +84,7 @@ fun BottomIcons(
 
     Surface(
         onClick = onClick,
-        modifier = Modifier.size(48.dp),
+        modifier = Modifier.size(58.dp),
         enabled = true,
         shape = androidx.compose.foundation.shape.CircleShape,
         color = Color.Transparent,
@@ -105,7 +106,7 @@ fun BottomIcons(
                 text = name,
                 style = MaterialTheme.typography.bodyMedium,
                 color = contentColor,
-                fontSize = 10.sp
+                fontSize = 9.sp
             )
         }
     }

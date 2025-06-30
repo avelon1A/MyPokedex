@@ -24,9 +24,13 @@ interface PokemonDao {
 
 @Query("SELECT * FROM pokemonDB WHERE name LIKE '%' || :name || '%'")
 suspend fun getPokemonByName(name: String): List<PokemonEntity>
+
+
+    @Query("UPDATE pokemonDB SET favorite = :isFavorite WHERE name = :pokemonName")
+    suspend fun updatePokemonFav(isFavorite: Int, pokemonName: String)
 }
 
-@Database(entities = [PokemonEntity::class], version = 1)
+@Database(entities = [PokemonEntity::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun pokemonDao(): PokemonDao
 }

@@ -133,7 +133,12 @@ fun SearchScreen(
                                         type = pokemon.types,
                                         modifier = Modifier,
                                         sharedTransitionScope = sharedTransitionScope,
-                                        animatedContentScope = animatedContentScope,
+                                        animatedContentScope = animatedContentScope, fav = pokemon.favorite, favClick = {
+                                            viewModel.updatefavoriteStatus(
+                                                !pokemon.favorite,
+                                                pokemon.name
+                                            )
+                                        }
                                     )
                                 }
                             }

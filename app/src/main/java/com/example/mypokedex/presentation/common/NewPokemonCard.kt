@@ -14,14 +14,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -35,13 +33,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.ImageLoader
 import coil.compose.SubcomposeAsyncImage
 import com.example.mypokedex.R
 
@@ -50,10 +46,11 @@ import com.example.mypokedex.R
 @Composable
 fun PokemonCardNew(modifier: Modifier = Modifier, image:String, pokemonName: String, onClick: () -> Unit,type:List<String>,
                    sharedTransitionScope: SharedTransitionScope,
-                   animatedContentScope: AnimatedContentScope
+                   animatedContentScope: AnimatedContentScope,fav: Boolean,favClick: () -> Unit
 ) {
     val dominantColor = remember { mutableStateOf(Color.Transparent) }
     val dominantColortwo = remember { mutableStateOf(Color.Transparent) }
+
     val pokemonBackgroundImage = getPokemonBackground(type[0])
     var pokemonSmallBackgroundTwo = 0
     if (type.size > 1){
@@ -149,10 +146,11 @@ fun PokemonCardNew(modifier: Modifier = Modifier, image:String, pokemonName: Str
 
             }
         }
-        Property1Default(
+        FavCompose(
             modifier = Modifier
                 .align(alignment = Alignment.TopEnd)
-                .padding(top = 8.dp, end = 8.dp)
+                .padding(top = 8.dp, end = 8.dp),isFav = fav, onClick =  favClick
+
         )
     }
 }
@@ -234,7 +232,12 @@ fun Property1Venenoso(modifier: Modifier = Modifier, image2: Int, type: String, 
 }
 
 @Composable
-fun Property1Default(modifier: Modifier = Modifier) {
+fun FavCompose(modifier: Modifier = Modifier, isFav: Boolean = false,onClick: () -> Unit) {
+    val icon = if (isFav) {
+        R.drawable.icon_fav_small_active
+    } else {
+        R.drawable.icon_fav_disable
+    }
     Box(
         modifier = modifier
             .requiredSize(size = 32.dp)
@@ -249,9 +252,9 @@ fun Property1Default(modifier: Modifier = Modifier) {
                 .border(
                     border = BorderStroke(1.5.dp, Color.White),
                     shape = CircleShape
-                ))
+                ).clickable{onClick()})
         Image(
-            painter = painterResource(id = R.drawable.pokeball),
+            painter = painterResource(id = icon),
             contentDescription = "PokeHeart",
             modifier = Modifier
                 .align(alignment = Alignment.TopStart)

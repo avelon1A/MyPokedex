@@ -35,6 +35,18 @@ fun searchPokemon(query: String) {
         _searchResults.value = emptyList()
     }
 
+    fun updatefavoriteStatus( isFavorite: Boolean, pokemon: String) {
+        viewModelScope.launch {
+            try {
+                pokemonRepository.updatePokemonfav( isFavorite, pokemon)
+            }
+            catch (e: Exception) {
+                e.printStackTrace()
+
+            }
+        }
+    }
+
 
 }
 

@@ -90,4 +90,6 @@ interface PokemonRepository {
      */
     suspend fun getPokemonByName(name: String): List<PokemonEntity>
 
+    suspend fun updatePokemonfav(isfavorite: Boolean, pokemonName: String)
+
 }

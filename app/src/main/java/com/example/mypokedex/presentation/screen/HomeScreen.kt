@@ -120,7 +120,10 @@ fun HomeScreen(
                                         type = pokemon.types,
                                         modifier = Modifier,
                                         sharedTransitionScope = sharedTransitionScope,
-                                        animatedContentScope = animatedContentScope,
+                                        animatedContentScope = animatedContentScope,fav = pokemon.favorite ,
+                                        favClick = {
+                                            viewModel.updatefav(!pokemon.favorite, pokemon.name)
+                                        }
                                     )
                                 }
                             }

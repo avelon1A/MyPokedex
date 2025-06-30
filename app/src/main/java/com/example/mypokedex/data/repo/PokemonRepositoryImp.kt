@@ -67,6 +67,13 @@ class PokemonRepositoryImp(private val apiService: ApiService, private val pokem
         return pokemonDao.getPokemonByName(name)
     }
 
+    override suspend fun updatePokemonfav(isfavorite: Boolean, pokemonName: String) {
+        return withContext(Dispatchers.IO) {
+            val isFav:Int = if (isfavorite) 1 else 0
+            pokemonDao.updatePokemonFav(isFavorite = isFav, pokemonName = pokemonName)
+        }
+    }
+
     override suspend fun clearCachedPokemon() {
         pokemonDao.clearAll()
     }
